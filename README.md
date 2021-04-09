@@ -1,5 +1,7 @@
 # Go-lang RPC client for Wharf
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/iver-wharf/wharf-api-client-go.svg)](https://pkg.go.dev/github.com/iver-wharf/wharf-api-client-go)
+
 A library to talk to Wharf via Wharf's main API written in Go.
 
 Uses `net/http` to send HTTP requests and `encoding/json` to
