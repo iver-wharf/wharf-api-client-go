@@ -38,7 +38,7 @@ func main() {
 
 ### Sample output
 
-```
+```log
 GET | PROJECT | 125
 Project #125: MyProject
 ```
