@@ -16,9 +16,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added CHANGELOG.md to repository. (!10)
 
-- Added support for endpoint `PUT /api/build/{buildid}?status={status}` (via function `PutStatus`). (!11)
+- Added support for endpoint `PUT /api/build/{buildid}?status={status}`
+  (via function `PutStatus`). (!11)
 
-- Added support for endpoint `POST /api/build/{buildid}/log` (via function `PostLog`). (!11)
+- Added support for endpoint `POST /api/build/{buildid}/log`
+  (via function `PostLog`). (!11)
 
 ## v1.1.0 (2021-01-07)
 
@@ -34,6 +36,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Removed group endpoints support, a reflection of the changes from the API
   v1.0.0. (!6)
+
   - `GET /api/group` (via `GetGroupById`)
   - `GET /api/groups/search` (via `GetGroup`)
   - `PUT /api/group` (via `PutGroup`)
@@ -66,6 +69,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 ## v0.1.0 (2019-11-21)
 
 - Added initial commit. Endpoints supported: (df25308e)
+
   - `POST /api/branch` (via `PutBranch`)
   - `GET /api/group/{groupId}` (via `GetGroupById`)
   - `GET /api/groups/search` (via `GetGroup`)

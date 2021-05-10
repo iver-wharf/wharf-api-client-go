@@ -38,9 +38,23 @@ func main() {
 
 ### Sample output
 
-```
+```log
 GET | PROJECT | 125
 Project #125: MyProject
+```
+
+## Linting markdown
+
+Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+
+```sh
+npm install
+
+npm run lint
+
+# Some errors can be fixed automatically. Keep in mind that this updates the
+# files in place.
+npm run lint-fix
 ```
 
 ---
