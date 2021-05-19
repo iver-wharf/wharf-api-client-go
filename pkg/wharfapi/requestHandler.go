@@ -99,16 +99,21 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 		var prob Problem
 		resp, readErr := ioutil.ReadAll(response.Body)
 		if readErr != nil {
-			return nil, fmt.Errorf("unexpected status code returned: %s; failed to read response body: %w", response.Status, readErr)
+			return nil, fmt.Errorf(
+				"unexpected status code returned: %s; failed to read response body: %w",
+				response.Status, readErr)
 		}
 		if closeErr := response.Body.Close(); closeErr != nil {
-			return nil, fmt.Errorf("unexpected status code returned: %s; failed to close response body reading: %w", response.Status, closeErr)
+			return nil, fmt.Errorf(
+				"unexpected status code returned: %s; failed to close response body reading: %w",
+				response.Status, closeErr)
 		}
 		if jsonErr := json.Unmarshal(resp, &prob); jsonErr != nil {
 			log.WithFields(log.Fields{
 				"status":  response.Status,
 				"request": req.RequestURI,
-			}).Warnln("Failed to parse non-2xx response body as a problem.Response type.")
+			}).WithError(jsonErr).
+				Warnln("Failed to parse non-2xx response body as a problem.Response type.")
 			return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
 		}
 		return nil, prob.Error()
