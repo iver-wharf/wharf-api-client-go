@@ -1,6 +1,7 @@
 package wharfapi
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -103,6 +104,60 @@ func TestSanitizeURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			got := redactTokenInURL(tc.url)
 			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func TestIsNonSuccessful_true(t *testing.T) {
+	tests := []struct {
+		name   string
+		status int
+	}{
+		{
+			name:   "100 Continue",
+			status: http.StatusContinue,
+		},
+		{
+			name:   "302 Found",
+			status: http.StatusFound,
+		},
+		{
+			name:   "404 Not Found",
+			status: http.StatusNotFound,
+		},
+		{
+			name:   "502 Bad Gateway",
+			status: http.StatusBadGateway,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := isNonSuccessful(tc.status)
+			assert.True(t, got)
+		})
+	}
+}
+
+func TestIsNonSuccessful_false(t *testing.T) {
+	tests := []struct {
+		name   string
+		status int
+	}{
+		{
+			name:   "200 OK",
+			status: http.StatusOK,
+		},
+		{
+			name:   "201 Created",
+			status: http.StatusCreated,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := isNonSuccessful(tc.status)
+			assert.False(t, got)
 		})
 	}
 }

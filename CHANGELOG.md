@@ -12,6 +12,13 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.3.0 (WIP)
+
+- Added problem response handling so better and more informative errors are
+  returned as `wharfapi.ProblemError` instead. (#4)
+
+- Fixed "non-2xx status code" checks. (#4)
+
 ## v1.2.0 (2021-02-25)
 
 - Added CHANGELOG.md to repository. (!10)

@@ -2,6 +2,7 @@ package wharfapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -87,23 +88,40 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 		return nil, err
 	}
 
-	if response.StatusCode == http.StatusUnauthorized {
-		response.Body.Close()
-		log.WithField("response", response).Errorln("Unauthorized")
-		realm := response.Header.Get("WWW-Authenticate")
-		return nil, &AuthError{realm}
-	}
-
-	if response.StatusCode < 200 && response.StatusCode >= 300 {
-		resp, err2 := ioutil.ReadAll(response.Body)
-		response.Body.Close()
-		if err2 == nil {
-			log.WithFields(log.Fields{
-				"status":        response.Status,
-				"response body": string(resp)}).Debug("Got invalid status code")
+	if isNonSuccessful(response.StatusCode) {
+		if response.StatusCode == http.StatusUnauthorized {
+			response.Body.Close()
+			log.WithField("response", response).Errorln("Unauthorized")
+			realm := response.Header.Get("WWW-Authenticate")
+			return nil, &AuthError{realm}
 		}
-		return nil, fmt.Errorf("unexpected status code returned %v", response.StatusCode)
+
+		var prob Problem
+		resp, readErr := ioutil.ReadAll(response.Body)
+		if readErr != nil {
+			return nil, fmt.Errorf(
+				"unexpected status code returned: %s; failed to read response body: %w",
+				response.Status, readErr)
+		}
+		if closeErr := response.Body.Close(); closeErr != nil {
+			return nil, fmt.Errorf(
+				"unexpected status code returned: %s; failed to close response body reading: %w",
+				response.Status, closeErr)
+		}
+		if jsonErr := json.Unmarshal(resp, &prob); jsonErr != nil {
+			log.WithFields(log.Fields{
+				"status":  response.Status,
+				"request": req.RequestURI,
+			}).WithError(jsonErr).
+				Warnln("Failed to parse non-2xx response body as a problem.Response type.")
+			return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
+		}
+		return nil, prob.Error()
 	}
 
 	return &response.Body, nil
+}
+
+func isNonSuccessful(statusCode int) bool {
+	return statusCode < 200 || statusCode >= 300
 }
