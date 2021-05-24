@@ -1,5 +1,6 @@
 # Go-lang RPC client for Wharf
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3ab0d0c67ee642bfa1952dae4d99f55d)](https://www.codacy.com/gh/iver-wharf/wharf-api-client-go/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iver-wharf/wharf-api-client-go&amp;utm_campaign=Badge_Grade)
 [![Go Reference](https://pkg.go.dev/badge/github.com/iver-wharf/wharf-api-client-go.svg)](https://pkg.go.dev/github.com/iver-wharf/wharf-api-client-go)
 
 A library to talk to Wharf via Wharf's main API written in Go.
@@ -43,19 +44,44 @@ GET | PROJECT | 125
 Project #125: MyProject
 ```
 
+## Linting Golang
+
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Revive to be installed: <https://revive.run/>
+
+```sh
+go get -u github.com/mgechev/revive
+```
+
+```sh
+npm run lint-go
+```
+
 ## Linting markdown
 
-Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
 
 ```sh
 npm install
 
+npm run lint-md
+
+# Some errors can be fixed automatically. Keep in mind that this updates the
+# files in place.
+npm run lint-md-fix
+```
+
+## Linting
+
+You can lint all of the above at the same time by running:
+
+```sh
 npm run lint
 
 # Some errors can be fixed automatically. Keep in mind that this updates the
 # files in place.
 npm run lint-fix
-```
+`
 
 ---
 
