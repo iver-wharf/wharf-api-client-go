@@ -1,6 +1,6 @@
 # Go-lang RPC client for Wharf
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3ab0d0c67ee642bfa1952dae4d99f55d)](https://www.codacy.com/gh/iver-wharf/wharf-api-client-go/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iver-wharf/wharf-api-client-go&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3ab0d0c67ee642bfa1952dae4d99f55d)](https://www.codacy.com/gh/iver-wharf/wharf-api-client-go/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=iver-wharf/wharf-api-client-go\&utm_campaign=Badge_Grade)
 [![Go Reference](https://pkg.go.dev/badge/github.com/iver-wharf/wharf-api-client-go.svg)](https://pkg.go.dev/github.com/iver-wharf/wharf-api-client-go)
 
 A library to talk to Wharf via Wharf's main API written in Go.
@@ -87,3 +87,4 @@ npm run lint-fix
 
 Maintained by [Iver](https://www.iver.com/en).
 Licensed under the [MIT license](./LICENSE).
+```
