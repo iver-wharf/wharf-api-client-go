@@ -23,11 +23,11 @@ import (
 
 func main() {
 	client := wharfapi.Client{
-		ApiUrl:     "https://example.wharf.com",
+		APIURL:     "https://example.wharf.com",
 		AuthHeader: "Bearer some-auth-token",
 	}
 
-	project,err := client.GetProjectById(125)
+	project,err := client.GetProjectByID(125)
 
 	if err != nil {
 		fmt.Printf("Unable to find project\n")

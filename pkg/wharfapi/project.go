@@ -15,7 +15,7 @@ type Project struct {
 	BuildDefinition string `json:"buildDefinition"`
 	TokenID         uint   `json:"tokenId"`
 	Description     string `json:"description"`
-	AvatarUrl       string `json:"avatarUrl"`
+	AvatarURL       string `json:"avatarUrl"`
 	ProviderID      uint   `json:"providerId"`
 	GitURL          string `json:"gitUrl"`
 }
@@ -28,10 +28,10 @@ type ProjectRun struct {
 }
 
 type ProjectRunResponse struct {
-	BuildId uint `json:"buildRef"`
+	BuildID uint `json:"buildRef"`
 }
 
-func (c Client) GetProjectById(projectID uint) (Project, error) {
+func (c Client) GetProjectByID(projectID uint) (Project, error) {
 	url := fmt.Sprintf("%s/api/project/%v", c.ApiUrl, projectID)
 	ioBody, err := doRequest("GET | PROJECT |", http.MethodGet, url, []byte{}, c.AuthHeader)
 	if err != nil {
