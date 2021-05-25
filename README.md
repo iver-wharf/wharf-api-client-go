@@ -87,4 +87,3 @@ npm run lint-fix
 
 Maintained by [Iver](https://www.iver.com/en).
 Licensed under the [MIT license](./LICENSE).
-```
