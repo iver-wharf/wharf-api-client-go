@@ -81,7 +81,7 @@ npm run lint
 # Some errors can be fixed automatically. Keep in mind that this updates the
 # files in place.
 npm run lint-fix
-`
+```
 
 ---
 
