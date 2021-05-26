@@ -12,7 +12,7 @@ func (e *AuthError) Error() string {
 // the Wharf main API.
 type Client struct {
 	AuthHeader string
-	ApiUrl     string
+	APIURL     string
 }
 
 // WharfClient contains authentication and API URLs used to access

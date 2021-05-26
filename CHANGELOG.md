@@ -19,6 +19,17 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Fixed "non-2xx status code" checks. (#4)
 
+- Fixed invalid initialisms in method and field names. Affected names: (#5)
+
+  | Before                       | After                        |
+  | ------                       | -----                        |
+  | `Client.ApiUrl`              | `Client.APIURL`              |
+  | `Client.GetProjectById`      | `Client.GetProjectByID`      |
+  | `Client.GetProviderById`     | `Client.GetProviderByID`     |
+  | `Client.GetTokenById`        | `Client.GetTokenByID`        |
+  | `Project.AvatarUrl`          | `Project.AvatarURL`          |
+  | `ProjectRunResponse.BuildId` | `ProjectRunResponse.BuildID` |
+
 ## v1.2.0 (2021-02-25)
 
 - Added CHANGELOG.md to repository. (!10)

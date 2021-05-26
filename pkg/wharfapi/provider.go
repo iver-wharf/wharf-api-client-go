@@ -15,7 +15,7 @@ type Provider struct {
 	TokenID    uint   `json:"tokenId"`
 }
 
-func (c Client) GetProviderById(providerID uint) (Provider, error) {
+func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 	newProvider := Provider{}
 
 	url := fmt.Sprintf("%s/api/provider/%v", c.ApiUrl, providerID)
