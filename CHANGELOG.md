@@ -14,6 +14,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.3.0 (WIP)
 
+- Removed field ProviderID from Token
+
 - Added problem response handling so better and more informative errors are
   returned as `wharfapi.ProblemError` instead. (#4)
 
