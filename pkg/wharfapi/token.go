@@ -67,7 +67,6 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 	return tokens[0], nil
 }
 
-
 func (c Client) PutToken(token Token) (Token, error) {
 	body, err := json.Marshal(token)
 	if err != nil {
@@ -92,7 +91,6 @@ func (c Client) PutToken(token Token) (Token, error) {
 
 	return newToken, nil
 }
-
 
 func (c Client) PostToken(token Token) (Token, error) {
 	newToken := Token{}
