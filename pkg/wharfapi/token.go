@@ -3,6 +3,7 @@ package wharfapi
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 )
@@ -65,6 +66,33 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 
 	return tokens[0], nil
 }
+
+
+func (c Client) PutToken(token Token) (Token, error) {
+	body, err := json.Marshal(token)
+	if err != nil {
+		return Token{}, err
+	}
+
+	log.WithField("project", string(body)).Traceln()
+
+	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
+	ioBody, err := doRequest("PUT | TOKEN |", http.MethodPut, apiURL, body, c.AuthHeader)
+	if err != nil {
+		return Token{}, err
+	}
+
+	defer (*ioBody).Close()
+
+	newToken := Token{}
+	err = json.NewDecoder(*ioBody).Decode(&newToken)
+	if err != nil {
+		return Token{}, err
+	}
+
+	return newToken, nil
+}
+
 
 func (c Client) PostToken(token Token) (Token, error) {
 	newToken := Token{}
