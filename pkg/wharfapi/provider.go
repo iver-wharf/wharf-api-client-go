@@ -3,6 +3,7 @@ package wharfapi
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 )
@@ -69,6 +70,31 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 	}
 
 	return providers[0], nil
+}
+
+func (c Client) PutProvider(provider Provider) (Provider, error) {
+	body, err := json.Marshal(provider)
+	if err != nil {
+		return Provider{}, err
+	}
+
+	log.WithField("provider", string(body)).Traceln()
+
+	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
+	ioBody, err := doRequest("PUT | PROVIDER |", http.MethodPut, apiURL, body, c.AuthHeader)
+	if err != nil {
+		return Provider{}, err
+	}
+
+	defer (*ioBody).Close()
+
+	newProvider := Provider{}
+	err = json.NewDecoder(*ioBody).Decode(&newProvider)
+	if err != nil {
+		return Provider{}, err
+	}
+
+	return newProvider, nil
 }
 
 func (c Client) PostProvider(provider Provider) (Provider, error) {
