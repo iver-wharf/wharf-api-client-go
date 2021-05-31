@@ -18,7 +18,7 @@ type Provider struct {
 func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 	newProvider := Provider{}
 
-	url := fmt.Sprintf("%s/api/provider/%v", c.ApiUrl, providerID)
+	url := fmt.Sprintf("%s/api/provider/%v", c.APIURL, providerID)
 	ioBody, err := doRequest("GET | PROVIDER |", http.MethodGet, url, []byte{}, c.AuthHeader)
 	if err != nil {
 		return newProvider, err
@@ -46,7 +46,7 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 		data.Add("TokenID", fmt.Sprint(tokenID))
 	}
 
-	u, _ := url.ParseRequestURI(c.ApiUrl)
+	u, _ := url.ParseRequestURI(c.APIURL)
 	u.Path = path
 	u.RawQuery = data.Encode()
 	url := fmt.Sprintf("%v", u)
@@ -78,7 +78,7 @@ func (c Client) PostProvider(provider Provider) (Provider, error) {
 		return newProvider, err
 	}
 
-	url := fmt.Sprintf("%s/api/provider", c.ApiUrl)
+	url := fmt.Sprintf("%s/api/provider", c.APIURL)
 	ioBody, err := doRequest("POST | PROVIDER |", http.MethodPost, url, body, c.AuthHeader)
 	if err != nil {
 		return newProvider, err

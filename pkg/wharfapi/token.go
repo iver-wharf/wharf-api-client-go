@@ -16,8 +16,8 @@ type Token struct {
 func (c Client) GetTokenByID(tokenID uint) (Token, error) {
 	newToken := Token{}
 
-	url := fmt.Sprintf("%s/api/token/%v", c.ApiUrl, tokenID)
-	ioBody, err := doRequest("GET | TOKEN |", http.MethodGet, url, []byte{}, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/token/%v", c.APIURL, tokenID)
+	ioBody, err := doRequest("GET | TOKEN |", http.MethodGet, apiURL, []byte{}, c.AuthHeader)
 	if err != nil {
 		return newToken, err
 	}
@@ -42,7 +42,7 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 		data.Add("UserName", userName)
 	}
 
-	u, _ := url.ParseRequestURI(c.ApiUrl)
+	u, _ := url.ParseRequestURI(c.APIURL)
 	u.Path = path
 	u.RawQuery = data.Encode()
 
@@ -73,8 +73,8 @@ func (c Client) PostToken(token Token) (Token, error) {
 		return newToken, err
 	}
 
-	url := fmt.Sprintf("%s/api/token", c.ApiUrl)
-	ioBody, err := doRequest("POST | TOKEN", http.MethodPost, url, body, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
+	ioBody, err := doRequest("POST | TOKEN", http.MethodPost, apiURL, body, c.AuthHeader)
 	if err != nil {
 		return newToken, err
 	}

@@ -32,7 +32,7 @@ type ProjectRunResponse struct {
 }
 
 func (c Client) GetProjectByID(projectID uint) (Project, error) {
-	url := fmt.Sprintf("%s/api/project/%v", c.ApiUrl, projectID)
+	url := fmt.Sprintf("%s/api/project/%v", c.APIURL, projectID)
 	ioBody, err := doRequest("GET | PROJECT |", http.MethodGet, url, []byte{}, c.AuthHeader)
 	if err != nil {
 		return Project{}, err
@@ -56,7 +56,7 @@ func (c Client) PutProject(project Project) (Project, error) {
 
 	log.WithField("project", string(body)).Traceln()
 
-	url := fmt.Sprintf("%s/api/project", c.ApiUrl)
+	url := fmt.Sprintf("%s/api/project", c.APIURL)
 	ioBody, err := doRequest("PUT | PROJECT |", http.MethodPut, url, body, c.AuthHeader)
 	if err != nil {
 		return Project{}, err
@@ -81,7 +81,7 @@ func (c Client) PostProjectRun(projectRun ProjectRun) (ProjectRunResponse, error
 
 	url := fmt.Sprintf(
 		"%s/api/project/%d/%s/run?branch=%s&environment=%s",
-		c.ApiUrl,
+		c.APIURL,
 		projectRun.ProjectID,
 		projectRun.Stage,
 		projectRun.Branch,
