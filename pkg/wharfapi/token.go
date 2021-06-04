@@ -84,8 +84,7 @@ func (c Client) PutToken(token Token) (Token, error) {
 	defer (*ioBody).Close()
 
 	var newToken Token
-	err = json.NewDecoder(*ioBody).Decode(&newToken)
-	if err != nil {
+	if err := json.NewDecoder(*ioBody).Decode(&newToken); err != nil {
 		return Token{}, err
 	}
 
