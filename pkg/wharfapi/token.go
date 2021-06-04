@@ -11,7 +11,6 @@ type Token struct {
 	TokenID    uint   `json:"tokenId"`
 	Token      string `json:"token"`
 	UserName   string `json:"userName"`
-	ProviderID uint   `json:"providerId"`
 }
 
 func (c Client) GetTokenByID(tokenID uint) (Token, error) {
