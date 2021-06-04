@@ -89,8 +89,7 @@ func (c Client) PutProvider(provider Provider) (Provider, error) {
 	defer (*ioBody).Close()
 
 	var newProvider Provider
-	err = json.NewDecoder(*ioBody).Decode(&newProvider)
-	if err != nil {
+	if err := json.NewDecoder(*ioBody).Decode(&newProvider); err != nil {
 		return Provider{}, err
 	}
 
