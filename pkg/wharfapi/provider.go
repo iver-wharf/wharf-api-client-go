@@ -3,7 +3,6 @@ package wharfapi
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 )
@@ -77,8 +76,6 @@ func (c Client) PutProvider(provider Provider) (Provider, error) {
 	if err != nil {
 		return Provider{}, err
 	}
-
-	log.WithField("provider", string(body)).Traceln()
 
 	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
 	ioBody, err := doRequest("PUT | PROVIDER |", http.MethodPut, apiURL, body, c.AuthHeader)

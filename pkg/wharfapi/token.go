@@ -3,7 +3,6 @@ package wharfapi
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 )
@@ -72,8 +71,6 @@ func (c Client) PutToken(token Token) (Token, error) {
 	if err != nil {
 		return Token{}, err
 	}
-
-	log.WithField("project", string(body)).Traceln()
 
 	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
 	ioBody, err := doRequest("PUT | TOKEN |", http.MethodPut, apiURL, body, c.AuthHeader)
