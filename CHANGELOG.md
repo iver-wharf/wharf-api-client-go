@@ -14,6 +14,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.3.0 (WIP)
 
+- Fixed implementation of the refactor for ApiUrl to APIURL. (#8)
+
+- Added endpoint `PUT /api/provider`. (#8)
+
+- Added endpoint `PUT /api/token`. (#8)
+
 - Added problem response handling so better and more informative errors are
   returned as `wharfapi.ProblemError` instead. (#4)
 

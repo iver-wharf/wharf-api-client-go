@@ -19,7 +19,7 @@ func (c Client) PostLog(buildID uint, buildLog BuildLog) error {
 		return err
 	}
 
-	url := fmt.Sprintf("%s/api/build/%d/log", c.ApiUrl, buildID)
+	url := fmt.Sprintf("%s/api/build/%d/log", c.APIURL, buildID)
 	_, err = doRequest("POST | LOG", http.MethodPost, url, body, c.AuthHeader)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (c Client) PostLog(buildID uint, buildLog BuildLog) error {
 }
 
 func (c Client) PutStatus(buildID uint, statusID BuildStatus) (Build, error) {
-	uri := fmt.Sprintf("%s/api/build/%d?status=%s", c.ApiUrl, buildID, url.QueryEscape(statusID.String()))
+	uri := fmt.Sprintf("%s/api/build/%d?status=%s", c.APIURL, buildID, url.QueryEscape(statusID.String()))
 
 	ioBody, err := doRequest("PUT | STATUS", http.MethodPut, uri, nil, c.AuthHeader)
 	if err != nil {

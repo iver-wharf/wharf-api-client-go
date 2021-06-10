@@ -18,8 +18,8 @@ type Provider struct {
 func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 	newProvider := Provider{}
 
-	url := fmt.Sprintf("%s/api/provider/%v", c.ApiUrl, providerID)
-	ioBody, err := doRequest("GET | PROVIDER |", http.MethodGet, url, []byte{}, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/provider/%v", c.APIURL, providerID)
+	ioBody, err := doRequest("GET | PROVIDER |", http.MethodGet, apiURL, []byte{}, c.AuthHeader)
 	if err != nil {
 		return newProvider, err
 	}
@@ -46,12 +46,12 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 		data.Add("TokenID", fmt.Sprint(tokenID))
 	}
 
-	u, _ := url.ParseRequestURI(c.ApiUrl)
+	u, _ := url.ParseRequestURI(c.APIURL)
 	u.Path = path
 	u.RawQuery = data.Encode()
-	url := fmt.Sprintf("%v", u)
+	apiURL := fmt.Sprintf("%v", u)
 
-	ioBody, err := doRequest("GET | PROVIDER |", http.MethodPost, url, []byte{}, c.AuthHeader)
+	ioBody, err := doRequest("GET | PROVIDER |", http.MethodPost, apiURL, []byte{}, c.AuthHeader)
 	if err != nil {
 		return newProvider, err
 	}
@@ -71,6 +71,30 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 	return providers[0], nil
 }
 
+// PutProvider godoc
+// Creates a new provider if a match is not found.
+func (c Client) PutProvider(provider Provider) (Provider, error) {
+	body, err := json.Marshal(provider)
+	if err != nil {
+		return Provider{}, err
+	}
+
+	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
+	ioBody, err := doRequest("PUT | PROVIDER |", http.MethodPut, apiURL, body, c.AuthHeader)
+	if err != nil {
+		return Provider{}, err
+	}
+
+	defer (*ioBody).Close()
+
+	var newProvider Provider
+	if err := json.NewDecoder(*ioBody).Decode(&newProvider); err != nil {
+		return Provider{}, err
+	}
+
+	return newProvider, nil
+}
+
 func (c Client) PostProvider(provider Provider) (Provider, error) {
 	newProvider := Provider{}
 	body, err := json.Marshal(provider)
@@ -78,8 +102,8 @@ func (c Client) PostProvider(provider Provider) (Provider, error) {
 		return newProvider, err
 	}
 
-	url := fmt.Sprintf("%s/api/provider", c.ApiUrl)
-	ioBody, err := doRequest("POST | PROVIDER |", http.MethodPost, url, body, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
+	ioBody, err := doRequest("POST | PROVIDER |", http.MethodPost, apiURL, body, c.AuthHeader)
 	if err != nil {
 		return newProvider, err
 	}

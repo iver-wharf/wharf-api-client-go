@@ -22,7 +22,7 @@ func (c Client) PutBranch(branch Branch) (Branch, error) {
 		return newBranch, err
 	}
 
-	url := fmt.Sprintf("%s/api/branch", c.ApiUrl)
+	url := fmt.Sprintf("%s/api/branch", c.APIURL)
 	ioBody, err := doRequest("POST | BRANCH |", http.MethodPost, url, body, c.AuthHeader)
 	if err != nil {
 		return newBranch, err
@@ -45,7 +45,7 @@ func (c Client) PutBranches(branches []Branch) ([]Branch, error) {
 		return newBranches, err
 	}
 
-	url := fmt.Sprintf("%s/api/branches", c.ApiUrl)
+	url := fmt.Sprintf("%s/api/branches", c.APIURL)
 	ioBody, err := doRequest("PUT | BRANCHES |", http.MethodPut, url, body, c.AuthHeader)
 	if err != nil {
 		return newBranches, err

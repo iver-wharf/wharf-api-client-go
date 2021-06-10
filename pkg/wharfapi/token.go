@@ -16,8 +16,8 @@ type Token struct {
 func (c Client) GetTokenByID(tokenID uint) (Token, error) {
 	newToken := Token{}
 
-	url := fmt.Sprintf("%s/api/token/%v", c.ApiUrl, tokenID)
-	ioBody, err := doRequest("GET | TOKEN |", http.MethodGet, url, []byte{}, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/token/%v", c.APIURL, tokenID)
+	ioBody, err := doRequest("GET | TOKEN |", http.MethodGet, apiURL, []byte{}, c.AuthHeader)
 	if err != nil {
 		return newToken, err
 	}
@@ -42,7 +42,7 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 		data.Add("UserName", userName)
 	}
 
-	u, _ := url.ParseRequestURI(c.ApiUrl)
+	u, _ := url.ParseRequestURI(c.APIURL)
 	u.Path = path
 	u.RawQuery = data.Encode()
 
@@ -66,6 +66,30 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 	return tokens[0], nil
 }
 
+// PutToken godoc
+// Creates a new token if a match is not found.
+func (c Client) PutToken(token Token) (Token, error) {
+	body, err := json.Marshal(token)
+	if err != nil {
+		return Token{}, err
+	}
+
+	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
+	ioBody, err := doRequest("PUT | TOKEN |", http.MethodPut, apiURL, body, c.AuthHeader)
+	if err != nil {
+		return Token{}, err
+	}
+
+	defer (*ioBody).Close()
+
+	var newToken Token
+	if err := json.NewDecoder(*ioBody).Decode(&newToken); err != nil {
+		return Token{}, err
+	}
+
+	return newToken, nil
+}
+
 func (c Client) PostToken(token Token) (Token, error) {
 	newToken := Token{}
 	body, err := json.Marshal(token)
@@ -73,8 +97,8 @@ func (c Client) PostToken(token Token) (Token, error) {
 		return newToken, err
 	}
 
-	url := fmt.Sprintf("%s/api/token", c.ApiUrl)
-	ioBody, err := doRequest("POST | TOKEN", http.MethodPost, url, body, c.AuthHeader)
+	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
+	ioBody, err := doRequest("POST | TOKEN", http.MethodPost, apiURL, body, c.AuthHeader)
 	if err != nil {
 		return newToken, err
 	}
