@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.3.0 (2021-06-14)
+## v1.3.0 (2021-06-10)
 
 - Fixed implementation of the refactor for ApiUrl to APIURL. (#8)
 
