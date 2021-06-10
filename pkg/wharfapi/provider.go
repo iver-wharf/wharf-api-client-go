@@ -71,6 +71,8 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 	return providers[0], nil
 }
 
+// PutProvider godoc
+// Creates a new provider if a match is not found.
 func (c Client) PutProvider(provider Provider) (Provider, error) {
 	body, err := json.Marshal(provider)
 	if err != nil {

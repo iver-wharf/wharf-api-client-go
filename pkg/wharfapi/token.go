@@ -66,6 +66,8 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 	return tokens[0], nil
 }
 
+// PutToken godoc
+// Creates a new token if a match is not found.
 func (c Client) PutToken(token Token) (Token, error) {
 	body, err := json.Marshal(token)
 	if err != nil {
