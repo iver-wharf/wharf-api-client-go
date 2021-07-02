@@ -48,7 +48,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   | `Project.AvatarUrl`          | `Project.AvatarURL`          |
   | `ProjectRunResponse.BuildId` | `ProjectRunResponse.BuildID` |
 
-- Remove ProviderID from Token to match the corresponding change in the DB datastructure. (#6)
+- Remove ProviderID from Token to match the corresponding change in the
+  DB datastructure. (#6)
 
 ## v1.2.0 (2021-02-25)
 
