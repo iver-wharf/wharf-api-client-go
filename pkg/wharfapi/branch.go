@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// Branch holds metadata about a Git branch for a given Wharf project.
 type Branch struct {
 	BranchID  uint   `json:"branchId"`
 	ProjectID uint   `json:"projectId"`
@@ -14,6 +15,9 @@ type Branch struct {
 	Default   bool   `json:"default"`
 }
 
+// PutBranch tries to match an existing branch by ID or by name,
+// or adds a new a provider if none matched, by invoking the HTTP request:
+// 	PUT /api/branch
 func (c Client) PutBranch(branch Branch) (Branch, error) {
 	newBranch := Branch{}
 
@@ -38,6 +42,10 @@ func (c Client) PutBranch(branch Branch) (Branch, error) {
 	return newBranch, nil
 }
 
+// PutBranches resets the default branch and list of branches for a project
+// using the project ID from the first branch in the provided list by invoking
+// the HTTP request:
+// 	PUT /api/branches
 func (c Client) PutBranches(branches []Branch) ([]Branch, error) {
 	var newBranches []Branch
 	body, err := json.Marshal(branches)

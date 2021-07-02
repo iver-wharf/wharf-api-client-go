@@ -7,12 +7,16 @@ import (
 	"net/url"
 )
 
+// Token is a value used by the provider plugins to authenticate with the remote
+// providers.
 type Token struct {
-	TokenID    uint   `json:"tokenId"`
-	Token      string `json:"token"`
-	UserName   string `json:"userName"`
+	TokenID  uint   `json:"tokenId"`
+	Token    string `json:"token"`
+	UserName string `json:"userName"`
 }
 
+// GetTokenByID fetches a token by ID by invoking the HTTP request:
+// 	GET /api/token/{tokenID}
 func (c Client) GetTokenByID(tokenID uint) (Token, error) {
 	newToken := Token{}
 
@@ -31,6 +35,9 @@ func (c Client) GetTokenByID(tokenID uint) (Token, error) {
 	return newToken, nil
 }
 
+// GetToken tries to search for a token using the username+token pair by
+// invoking the HTTP request:
+// 	GET /api/token/search
 func (c Client) GetToken(token string, userName string) (Token, error) {
 	newToken := Token{}
 
@@ -66,8 +73,9 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 	return tokens[0], nil
 }
 
-// PutToken godoc
-// Creates a new token if a match is not found.
+// PutToken tries to match an existing token by ID or username+token and updates
+// it, or adds a new a token if none matched, by invoking the HTTP request:
+// 	PUT /api/token
 func (c Client) PutToken(token Token) (Token, error) {
 	body, err := json.Marshal(token)
 	if err != nil {
@@ -90,6 +98,8 @@ func (c Client) PutToken(token Token) (Token, error) {
 	return newToken, nil
 }
 
+// PostToken adds a new a token by invoking the HTTP request:
+// 	POST /api/token
 func (c Client) PostToken(token Token) (Token, error) {
 	newToken := Token{}
 	body, err := json.Marshal(token)
