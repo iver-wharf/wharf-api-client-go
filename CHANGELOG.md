@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.3.1 (WIP)
+
+- Changed to use `problem.Response` from `wharf-core` instead of the
+  `wharfapi.Problem` that was added in v1.3.0/#4. (#12)
+
 ## v1.3.0 (2021-06-10)
 
 - Fixed implementation of the refactor for ApiUrl to APIURL. (#8)
