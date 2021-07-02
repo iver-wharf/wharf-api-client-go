@@ -44,6 +44,10 @@ func parseProblemResponse(response *http.Response) (problem.Response, error) {
 
 // ProblemError is a class that conforms with the "error" interface and is
 // returned by any HTTP request for which a problem response was sent.
+//
+// Since v4.0.0 of wharf-api and v1.3.0 of wharf-api-client-go all endpoints
+// will return IETF RFC-7807 compatible problem errors whenever there is a
+// non-2xx response.
 type ProblemError struct {
 	Problem problem.Response
 	Message string
