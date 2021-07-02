@@ -2,10 +2,8 @@ package wharfapi
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -96,27 +94,13 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 			return nil, &AuthError{realm}
 		}
 
-		var prob Problem
-		resp, readErr := ioutil.ReadAll(response.Body)
-		if readErr != nil {
-			return nil, fmt.Errorf(
-				"unexpected status code returned: %s; failed to read response body: %w",
-				response.Status, readErr)
+		if isProblemResponse(response) {
+			prob, err := parseProblemResponse(response)
+			if err != nil {
+				return nil, fmt.Errorf("unexpected status code returned: %s: %w", response.Status, err)
+			}
+			return nil, newProblemError(prob)
 		}
-		if closeErr := response.Body.Close(); closeErr != nil {
-			return nil, fmt.Errorf(
-				"unexpected status code returned: %s; failed to close response body reading: %w",
-				response.Status, closeErr)
-		}
-		if jsonErr := json.Unmarshal(resp, &prob); jsonErr != nil {
-			log.WithFields(log.Fields{
-				"status":  response.Status,
-				"request": req.RequestURI,
-			}).WithError(jsonErr).
-				Warnln("Failed to parse non-2xx response body as a problem.Response type.")
-			return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
-		}
-		return nil, prob.Error()
 	}
 
 	return &response.Body, nil
