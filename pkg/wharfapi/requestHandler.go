@@ -73,10 +73,11 @@ func redactTokenInURL(urlStr string) string {
 }
 
 func doRequest(from string, method string, URLStr string, body []byte, authHeader string) (*io.ReadCloser, error) {
+	var redactedURL = redactTokenInURL(URLStr)
 	var withRequestMeta = func(ev logger.Event) logger.Event {
 		return ev.
 			WithString("method", method).
-			WithString("url", redactTokenInURL(URLStr))
+			WithString("url", redactedURL)
 	}
 	withRequestMeta(log.Debug()).Message(from)
 
