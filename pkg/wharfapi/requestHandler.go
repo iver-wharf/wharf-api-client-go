@@ -31,16 +31,18 @@ func redactTokenInURL(urlStr string) string {
 	uri, err := url.Parse(urlStr)
 	if err != nil {
 		log.Warn().
+			WithError(err).
 			WithString("action", "parse URL").
-			WithError(err).Message("Unable to redact token from URL.")
+			Message("Unable to redact token from URL.")
 		return ""
 	}
 
 	params, err := url.ParseQuery(uri.RawQuery)
 	if err != nil {
 		log.Warn().
+			WithError(err).
 			WithString("action", "parse query").
-			WithError(err).Message("Unable to redact token from URL.")
+			Message("Unable to redact token from URL.")
 		return ""
 	}
 
@@ -91,7 +93,9 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		withRequestMeta(log.Error()).WithError(err).Message("Failed sending HTTP request.")
+		withRequestMeta(log.Error()).
+			WithError(err).
+			Message("Failed sending HTTP request.")
 		return nil, err
 	}
 
@@ -112,6 +116,11 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 			}
 			return nil, newProblemError(prob)
 		}
+
+		withRequestMeta(log.Warn()).
+			WithString("Content-Type", response.Header.Get("Content-Type")).
+			Messagef("Non-2xx should have responded with a Content-Type of %q.", problemContentType)
+		return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
 	}
 
 	return &response.Body, nil
