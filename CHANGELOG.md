@@ -12,6 +12,15 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.3.1 (WIP)
+
+- Added dependency on `github.com/iver-wharf/wharf-core`. (#13)
+
+- Changed all logging via `fmt.Print` and sirupsen/logrus to instead use the new
+ `github.com/iver-wharf/wharf-core/pkg/logger`. (#13)
+
+- Removed dependency on `github.com/sirupsen/logrus`. (#13)
+
 ## v1.3.0 (2021-06-10)
 
 - Fixed implementation of the refactor for ApiUrl to APIURL. (#8)
