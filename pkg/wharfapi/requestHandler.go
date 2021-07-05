@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"regexp"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/iver-wharf/wharf-core/pkg/logger"
 )
 
 var redacted = "*REDACTED*"
@@ -32,13 +32,17 @@ func redactTokenInURL(urlStr string) string {
 
 	uri, err := url.Parse(urlStr)
 	if err != nil {
-		log.WithError(err).Warningln("Unable to redact token from URL: parse URL")
+		log.Warn().
+			WithString("action", "parse URL").
+			WithError(err).Message("Unable to redact token from URL.")
 		return ""
 	}
 
 	params, err := url.ParseQuery(uri.RawQuery)
 	if err != nil {
-		log.WithError(err).Warningln("Unable to redact token from URL: parse query")
+		log.Warn().
+			WithString("action", "parse query").
+			WithError(err).Message("Unable to redact token from URL.")
 		return ""
 	}
 
@@ -57,7 +61,11 @@ func redactTokenInURL(urlStr string) string {
 
 	sanitized, err := url.PathUnescape(newURLStr)
 	if err != nil {
-		log.WithError(err).WithField("new URL string", newURLStr).Warningln("Unable to redact token from URL: unescape path")
+		log.Warn().
+			WithString("action", "unescape path").
+			WithError(err).
+			WithString("newURL", newURLStr).
+			Message("Unable to redact token from URL.")
 		return newURLStr
 	}
 
@@ -65,15 +73,16 @@ func redactTokenInURL(urlStr string) string {
 }
 
 func doRequest(from string, method string, URLStr string, body []byte, authHeader string) (*io.ReadCloser, error) {
-	log.WithFields(log.Fields{
-		"method": method,
-		"body":   redactTokenInJSON(string(body)),
-		"url":    redactTokenInURL(URLStr),
-	}).Debugln(from)
+	var withRequestMeta = func(ev logger.Event) logger.Event {
+		return ev.
+			WithString("method", method).
+			WithString("url", redactTokenInURL(URLStr))
+	}
+	withRequestMeta(log.Debug()).Message(from)
 
 	req, err := http.NewRequest(method, URLStr, bytes.NewReader(body))
 	if err != nil {
-		log.WithError(err).Errorln("Unable to prepare http request")
+		log.Error().WithError(err).Message("Failed preparing HTTP request.")
 		return nil, err
 	}
 
@@ -84,14 +93,16 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.WithError(err).Errorln("Unable to send http request")
+		withRequestMeta(log.Error()).WithError(err).Message("Failed sending HTTP request.")
 		return nil, err
 	}
 
 	if isNonSuccessful(response.StatusCode) {
 		if response.StatusCode == http.StatusUnauthorized {
 			response.Body.Close()
-			log.WithField("response", response).Errorln("Unauthorized")
+			withRequestMeta(log.Error()).
+				WithInt("status", response.StatusCode).
+				Message("Unauthorized.")
 			realm := response.Header.Get("WWW-Authenticate")
 			return nil, &AuthError{realm}
 		}
@@ -109,11 +120,9 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 				response.Status, closeErr)
 		}
 		if jsonErr := json.Unmarshal(resp, &prob); jsonErr != nil {
-			log.WithFields(log.Fields{
-				"status":  response.Status,
-				"request": req.RequestURI,
-			}).WithError(jsonErr).
-				Warnln("Failed to parse non-2xx response body as a problem.Response type.")
+			withRequestMeta(log.Error()).
+				WithInt("status", response.StatusCode).
+				Message("Failed to parse non-2xx response body as a problem.Response type.")
 			return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
 		}
 		return nil, prob.Error()
