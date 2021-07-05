@@ -118,6 +118,7 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 		}
 
 		withRequestMeta(log.Warn()).
+			WithInt("status", response.StatusCode).
 			WithString("Content-Type", response.Header.Get("Content-Type")).
 			Messagef("Non-2xx should have responded with a Content-Type of %q.", problemContentType)
 		return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
