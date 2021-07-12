@@ -7,6 +7,7 @@ import (
 	"net/url"
 )
 
+// Provider holds metadata about a provider registered in Wharf.
 type Provider struct {
 	ProviderID uint   `json:"providerId"`
 	Name       string `json:"name"`
@@ -15,6 +16,8 @@ type Provider struct {
 	TokenID    uint   `json:"tokenId"`
 }
 
+// GetProviderByID fetches a provider by ID by invoking the HTTP request:
+// 	GET /api/provider/{providerID}
 func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 	newProvider := Provider{}
 
@@ -33,6 +36,9 @@ func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 	return newProvider, nil
 }
 
+// GetProvider tries to find a provider based on its name, URL, etc. by invoking
+// the HTTP request:
+// 	GET /api/providers/search
 func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr string, tokenID uint) (Provider, error) {
 	newProvider := Provider{}
 
@@ -71,8 +77,10 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 	return providers[0], nil
 }
 
-// PutProvider godoc
-// Creates a new provider if a match is not found.
+// PutProvider tries to match an existing provider by ID or combination of name,
+// URL, etc. and updates it, or adds a new a provider if none matched,
+// by invoking the HTTP request:
+// 	PUT /api/provider
 func (c Client) PutProvider(provider Provider) (Provider, error) {
 	body, err := json.Marshal(provider)
 	if err != nil {
@@ -95,6 +103,8 @@ func (c Client) PutProvider(provider Provider) (Provider, error) {
 	return newProvider, nil
 }
 
+// PostProvider adds a new a provider by invoking the HTTP request:
+// 	POST /api/provider
 func (c Client) PostProvider(provider Provider) (Provider, error) {
 	newProvider := Provider{}
 	body, err := json.Marshal(provider)

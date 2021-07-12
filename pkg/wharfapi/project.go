@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// Project is a project inside Wharf. For most providers this represents info
+// about a Git repository that has been registered in Wharf.
 type Project struct {
 	ProjectID       uint   `json:"projectId"`
 	Name            string `json:"name"`
@@ -18,6 +20,8 @@ type Project struct {
 	GitURL          string `json:"gitUrl"`
 }
 
+// ProjectRun is a range of options you start a build with. The ProjectID and
+// Stage fields are required when starting a build.
 type ProjectRun struct {
 	ProjectID   uint   `json:"projectId"`
 	Stage       string `json:"stage"`
@@ -25,10 +29,13 @@ type ProjectRun struct {
 	Environment string `json:"environment"`
 }
 
+// ProjectRunResponse contains metadata about the newly started build.
 type ProjectRunResponse struct {
 	BuildID uint `json:"buildRef"`
 }
 
+// GetProjectByID fetches a project by ID by invoking the HTTP request:
+// 	GET /api/project/{projectID}
 func (c Client) GetProjectByID(projectID uint) (Project, error) {
 	url := fmt.Sprintf("%s/api/project/%v", c.APIURL, projectID)
 	ioBody, err := doRequest("GET | PROJECT |", http.MethodGet, url, []byte{}, c.AuthHeader)
@@ -46,6 +53,9 @@ func (c Client) GetProjectByID(projectID uint) (Project, error) {
 	return newProject, nil
 }
 
+// PutProject tries to match an existing project by ID or name+group and updates
+// it, or adds a new a project if none matched, by invoking the HTTP request:
+// 	PUT /api/project
 func (c Client) PutProject(project Project) (Project, error) {
 	body, err := json.Marshal(project)
 	if err != nil {
@@ -69,6 +79,8 @@ func (c Client) PutProject(project Project) (Project, error) {
 	return newProject, nil
 }
 
+// PostProjectRun starts a new build by invoking the HTTP request:
+// 	POST /api/project/{projectID}/{stage}/run
 func (c Client) PostProjectRun(projectRun ProjectRun) (ProjectRunResponse, error) {
 	body, err := json.Marshal(projectRun)
 	if err != nil {

@@ -14,6 +14,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.3.1 (WIP)
 
+- Added documentation to all exported methods. (#11)
+
 - Added dependency on `github.com/iver-wharf/wharf-core`. (#12, #13)
 
 - Changed all logging via `fmt.Print` and sirupsen/logrus to instead use the new
@@ -48,7 +50,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   | `Project.AvatarUrl`          | `Project.AvatarURL`          |
   | `ProjectRunResponse.BuildId` | `ProjectRunResponse.BuildID` |
 
-- Remove ProviderID from Token to match the corresponding change in the DB datastructure. (#6)
+- Remove ProviderID from Token to match the corresponding change in the
+  DB datastructure. (#6)
 
 ## v1.2.0 (2021-02-25)
 
