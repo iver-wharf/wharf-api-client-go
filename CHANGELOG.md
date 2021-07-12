@@ -22,7 +22,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
  `github.com/iver-wharf/wharf-core/pkg/logger`. (#13)
 
 - Changed to use `problem.Response` from `wharf-core` instead of the
-  `wharfapi.Problem` that was added in v1.3.0/#4. (#12)
+  `wharfapi.Problem` that was added in v1.3.0/#4. (#12, #14)
+  
+- Removed `wharfapi.ProblemError` as the `problem.Response` type from the
+  `wharf-core` module conforms to the `error` interface. (#14)
 
 - Removed dependency on `github.com/sirupsen/logrus`. (#13)
 
