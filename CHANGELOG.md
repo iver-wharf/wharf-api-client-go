@@ -14,8 +14,15 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.3.1 (WIP)
 
+- Added dependency on `github.com/iver-wharf/wharf-core`. (#12, #13)
+
+- Changed all logging via `fmt.Print` and sirupsen/logrus to instead use the new
+ `github.com/iver-wharf/wharf-core/pkg/logger`. (#13)
+
 - Changed to use `problem.Response` from `wharf-core` instead of the
   `wharfapi.Problem` that was added in v1.3.0/#4. (#12)
+
+- Removed dependency on `github.com/sirupsen/logrus`. (#13)
 
 ## v1.3.0 (2021-06-10)
 

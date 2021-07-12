@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type Project struct {
@@ -54,8 +52,6 @@ func (c Client) PutProject(project Project) (Project, error) {
 		return Project{}, err
 	}
 
-	log.WithField("project", string(body)).Traceln()
-
 	url := fmt.Sprintf("%s/api/project", c.APIURL)
 	ioBody, err := doRequest("PUT | PROJECT |", http.MethodPut, url, body, c.AuthHeader)
 	if err != nil {
@@ -99,6 +95,6 @@ func (c Client) PostProjectRun(projectRun ProjectRun) (ProjectRunResponse, error
 		return ProjectRunResponse{}, err
 	}
 
-	log.WithField("ProjectRunResponse", newProject).Debugln()
+	log.Debug().WithUint("buildRef", newProject.BuildID).Message("Started build.")
 	return newProject, nil
 }
