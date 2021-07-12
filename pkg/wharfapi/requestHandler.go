@@ -9,6 +9,7 @@ import (
 	"regexp"
 
 	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/pkg/problem"
 )
 
 var redacted = "*REDACTED*"
@@ -110,18 +111,18 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 			return nil, &AuthError{realm}
 		}
 
-		if isProblemResponse(response) {
-			prob, err := parseProblemResponse(response)
+		if problem.IsHTTPResponse(response) {
+			prob, err := problem.ParseHTTPResponse(response)
 			if err != nil {
 				return nil, fmt.Errorf("unexpected status code returned: %s: %w", response.Status, err)
 			}
-			return nil, newProblemError(prob)
+			return nil, prob
 		}
 
 		withRequestMeta(log.Warn()).
 			WithInt("status", response.StatusCode).
 			WithString("Content-Type", response.Header.Get("Content-Type")).
-			Messagef("Non-2xx should have responded with a Content-Type of %q.", problemContentType)
+			Messagef("Non-2xx should have responded with a Content-Type of %q.", problem.HTTPContentType)
 		return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
 	}
 
