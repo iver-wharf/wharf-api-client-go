@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.3.1 (2021-08-25)
+## v1.3.1 (2021-08-30)
 
 - Added documentation to all exported methods. (#11)
 
