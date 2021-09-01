@@ -37,7 +37,7 @@ func (c Client) GetTokenByID(tokenID uint) (Token, error) {
 
 // GetToken tries to search for a token using the username+token pair by
 // invoking the HTTP request:
-// 	GET /api/token/search
+// 	POST /api/token/search
 func (c Client) GetToken(token string, userName string) (Token, error) {
 	newToken := Token{}
 
@@ -71,6 +71,32 @@ func (c Client) GetToken(token string, userName string) (Token, error) {
 	}
 
 	return tokens[0], nil
+}
+
+// SearchToken tries to match the given token on the token field and username
+// field, by invoking the HTTP request:
+// 	POST /api/tokens/search
+func (c Client) SearchToken(token Token) ([]Token, error) {
+	body, err := json.Marshal(token)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
+	ioBody, err := doRequest("SEARCH | TOKEN |", http.MethodPost, url, body, c.AuthHeader)
+	if err != nil {
+		return nil, err
+	}
+
+	defer (*ioBody).Close()
+
+	var foundTokens []Token
+	err = json.NewDecoder(*ioBody).Decode(&foundTokens)
+	if err != nil {
+		return nil, err
+	}
+
+	return foundTokens, nil
 }
 
 // PutToken tries to match an existing token by ID or username+token and updates

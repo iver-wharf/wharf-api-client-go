@@ -38,7 +38,7 @@ func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 
 // GetProvider tries to find a provider based on its name, URL, etc. by invoking
 // the HTTP request:
-// 	GET /api/providers/search
+// 	POST /api/providers/search
 func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr string, tokenID uint) (Provider, error) {
 	newProvider := Provider{}
 
@@ -75,6 +75,34 @@ func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr str
 	}
 
 	return providers[0], nil
+}
+
+// SearchProvider tries to match the given provider on the provider name, URL,
+// upload URL, and token ID, by invoking the HTTP request:
+// 	POST /api/providers/search
+//
+// The token ID is not queried if the argument's tokenID field is set to zero.
+func (c Client) SearchProvider(provider Provider) ([]Provider, error) {
+	body, err := json.Marshal(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
+	ioBody, err := doRequest("SEARCH | PROVIDER |", http.MethodPost, url, body, c.AuthHeader)
+	if err != nil {
+		return nil, err
+	}
+
+	defer (*ioBody).Close()
+
+	var foundProviders []Provider
+	err = json.NewDecoder(*ioBody).Decode(&foundProviders)
+	if err != nil {
+		return nil, err
+	}
+
+	return foundProviders, nil
 }
 
 // PutProvider tries to match an existing provider by ID or combination of name,

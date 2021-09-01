@@ -53,6 +53,32 @@ func (c Client) GetProjectByID(projectID uint) (Project, error) {
 	return newProject, nil
 }
 
+// SearchProject tries to match the given project on all non-zero fields by
+// invoking the HTTP request:
+// 	POST /api/projects/search
+func (c Client) SearchProject(project Project) ([]Project, error) {
+	body, err := json.Marshal(project)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
+	ioBody, err := doRequest("SEARCH | PROJECT |", http.MethodPost, url, body, c.AuthHeader)
+	if err != nil {
+		return nil, err
+	}
+
+	defer (*ioBody).Close()
+
+	var foundProjects []Project
+	err = json.NewDecoder(*ioBody).Decode(&foundProjects)
+	if err != nil {
+		return nil, err
+	}
+
+	return foundProjects, nil
+}
+
 // PutProject tries to match an existing project by ID or name+group and updates
 // it, or adds a new a project if none matched, by invoking the HTTP request:
 // 	PUT /api/project
