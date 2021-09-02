@@ -82,7 +82,7 @@ func (c Client) SearchToken(token Token) ([]Token, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
+	url := fmt.Sprintf("%s/api/tokens/search", c.APIURL)
 	ioBody, err := doRequest("SEARCH | TOKEN |", http.MethodPost, url, body, c.AuthHeader)
 	if err != nil {
 		return nil, err

@@ -88,7 +88,7 @@ func (c Client) SearchProvider(provider Provider) ([]Provider, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
+	url := fmt.Sprintf("%s/api/providers/search", c.APIURL)
 	ioBody, err := doRequest("SEARCH | PROVIDER |", http.MethodPost, url, body, c.AuthHeader)
 	if err != nil {
 		return nil, err
