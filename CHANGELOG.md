@@ -6,11 +6,19 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	When composing new changes to this list, try to follow convention.
 
 	The WIP release shall be updated just before adding the Git tag.
-	From (WIP) to (YYYY-MM-DD), ex: (2021-02-09) for 9th of Febuary, 2021
+	From (WIP) to (YYYY-MM-DD), ex: (2021-02-09) for 9th of February, 2021
 
 	A good source on conventions can be found here:
 	https://changelog.md/
 -->
+
+## v1.4.0 (WIP)
+
+- Added methods for search endpoints: (#18)
+
+  - `Client.SearchProject(Project) []Project`: `POST /api/projects/search`
+  - `Client.SearchProvider(Provider) []Provider`: `POST /api/providers/search`
+  - `Client.SearchToken(Token) []Token`: `POST /api/tokens/search`
 
 ## v1.3.1 (2021-08-30)
 
