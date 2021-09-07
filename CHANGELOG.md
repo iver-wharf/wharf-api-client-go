@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.4.0 (WIP)
+## v1.4.0 (2021-09-07)
 
 - Added methods for search endpoints: (#18)
 
