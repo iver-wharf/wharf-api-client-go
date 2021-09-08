@@ -80,9 +80,9 @@ func (c Client) SearchProject(project Project) ([]Project, error) {
 	return foundProjects, nil
 }
 
-// PutProject tries to match an existing project by ID or name+group and updates
-// it, or adds a new a project if none matched, by invoking the HTTP request:
-// 	PUT /api/project
+// PutProject tries to match an existing project by ID or remote ID + host name
+// and updates it, or adds a new a project if none matched, by invoking the HTTP
+// request: PUT /api/project
 func (c Client) PutProject(project Project) (Project, error) {
 	body, err := json.Marshal(project)
 	if err != nil {
