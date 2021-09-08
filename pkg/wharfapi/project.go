@@ -18,6 +18,7 @@ type Project struct {
 	AvatarURL       string `json:"avatarUrl"`
 	ProviderID      uint   `json:"providerId"`
 	GitURL          string `json:"gitUrl"`
+	RemoteProjectID string `json:"remoteProjectId"`
 }
 
 // ProjectRun is a range of options you start a build with. The ProjectID and
