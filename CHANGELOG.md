@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.0.0 (WIP)
+
+- Removed the `wharfapi.Provider.UploadURL` field, which will be removed from
+  the `Provider` struct in `github.com/iver-wharf/wharf-api` in v5.0.0. (#21)
+
 ## v1.4.0 (2021-09-07)
 
 - Added methods for search endpoints: (#18)
