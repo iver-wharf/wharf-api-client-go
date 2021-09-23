@@ -12,7 +12,6 @@ type Provider struct {
 	ProviderID uint   `json:"providerId"`
 	Name       string `json:"name"`
 	URL        string `json:"url"`
-	UploadURL  string `json:"uploadUrl"`
 	TokenID    uint   `json:"tokenId"`
 }
 
@@ -39,14 +38,13 @@ func (c Client) GetProviderByID(providerID uint) (Provider, error) {
 // GetProvider tries to find a provider based on its name, URL, etc. by invoking
 // the HTTP request:
 // 	POST /api/providers/search
-func (c Client) GetProvider(providerName string, urlStr string, uploadURLStr string, tokenID uint) (Provider, error) {
+func (c Client) GetProvider(providerName, urlStr string, tokenID uint) (Provider, error) {
 	newProvider := Provider{}
 
 	path := "/api/providers/search"
 	data := url.Values{}
 	data.Set("Name", providerName)
 	data.Add("URL", urlStr)
-	data.Add("UploadURL", uploadURLStr)
 
 	if tokenID > 0 {
 		data.Add("TokenID", fmt.Sprint(tokenID))
