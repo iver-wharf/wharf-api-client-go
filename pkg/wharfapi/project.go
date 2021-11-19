@@ -4,20 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi/query"
+	"github.com/iver-wharf/wharf-api/pkg/model/response"
 )
 
-// Project is a project inside Wharf. For most providers this represents info
-// about a Git repository that has been registered in Wharf.
-type Project struct {
-	ProjectID       uint   `json:"projectId"`
-	Name            string `json:"name"`
-	GroupName       string `json:"groupName"`
-	BuildDefinition string `json:"buildDefinition"`
-	TokenID         uint   `json:"tokenId"`
-	Description     string `json:"description"`
-	AvatarURL       string `json:"avatarUrl"`
-	ProviderID      uint   `json:"providerId"`
-	GitURL          string `json:"gitUrl"`
+type Project response.Project
+type ProjectSearch struct {
+	OrderBy          []string `query:"name:orderBy"`
+	Limit            *int     `query:"name:limit"`
+	Offset           *int     `query:"name:offset,requires:Limit,min:0"`
+	Name             *string  `query:"name:name"`
+	GroupName        *string  `query:"name:groupName"`
+	Description      *string  `query:"name:description"`
+	TokenID          *uint    `query:"name:tokenId"`
+	ProviderID       *uint    `query:"name:providerId"`
+	GitURL           *string  `query:"name:gitUrl"`
+	NameMatch        *string  `query:"name:nameMatch,excluded_with:Name"`
+	GroupNameMatch   *string  `query:"name:groupNameMatch,excluded_with:GroupName"`
+	DescriptionMatch *string  `query:"name:descriptionMatch,excluded_with:Description"`
+	GitURLMatch      *string  `query:"name:gitUrlMatch,excluded_with:GitURL"`
+	Match            *string  `query:"name:match"`
 }
 
 // ProjectRun is a range of options you start a build with. The ProjectID and
@@ -25,8 +32,8 @@ type Project struct {
 type ProjectRun struct {
 	ProjectID   uint   `json:"projectId"`
 	Stage       string `json:"stage"`
-	Branch      string `json:"branch"`
-	Environment string `json:"environment"`
+	Branch      string `json:"branch" query:"name:branch"`
+	Environment string `json:"environment" query:"name:environment"`
 }
 
 // ProjectRunResponse contains metadata about the newly started build.
@@ -37,8 +44,8 @@ type ProjectRunResponse struct {
 // GetProjectByID fetches a project by ID by invoking the HTTP request:
 // 	GET /api/project/{projectID}
 func (c Client) GetProjectByID(projectID uint) (Project, error) {
-	url := fmt.Sprintf("%s/api/project/%v", c.APIURL, projectID)
-	ioBody, err := doRequest("GET | PROJECT |", http.MethodGet, url, []byte{}, c.AuthHeader)
+	path := fmt.Sprintf("/api/project/%v", projectID)
+	ioBody, err := doRequestNew("GET | PROJECT |", http.MethodGet, c.APIURL, path, nil, []byte{}, c.AuthHeader)
 	if err != nil {
 		return Project{}, err
 	}
@@ -56,14 +63,13 @@ func (c Client) GetProjectByID(projectID uint) (Project, error) {
 // SearchProject tries to match the given project on all non-zero fields by
 // invoking the HTTP request:
 // 	POST /api/projects/search
-func (c Client) SearchProject(project Project) ([]Project, error) {
-	body, err := json.Marshal(project)
+func (c Client) GetProjectList(params ProjectSearch) ([]Project, error) {
+	q, err := query.FromObj(params)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed constructing query from object: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
-	ioBody, err := doRequest("SEARCH | PROJECT |", http.MethodPost, url, body, c.AuthHeader)
+	ioBody, err := doRequestNew("GET | PROJECT LIST |", http.MethodGet, c.APIURL, "/api/project", q, nil, c.AuthHeader)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +94,7 @@ func (c Client) PutProject(project Project) (Project, error) {
 		return Project{}, err
 	}
 
-	url := fmt.Sprintf("%s/api/project", c.APIURL)
-	ioBody, err := doRequest("PUT | PROJECT |", http.MethodPut, url, body, c.AuthHeader)
+	ioBody, err := doRequestNew("PUT | PROJECT |", http.MethodPut, c.APIURL, "/api/project", nil, body, c.AuthHeader)
 	if err != nil {
 		return Project{}, err
 	}
@@ -113,14 +118,13 @@ func (c Client) PostProjectRun(projectRun ProjectRun) (ProjectRunResponse, error
 		return ProjectRunResponse{}, err
 	}
 
-	url := fmt.Sprintf(
-		"%s/api/project/%d/%s/run?branch=%s&environment=%s",
-		c.APIURL,
-		projectRun.ProjectID,
-		projectRun.Stage,
-		projectRun.Branch,
-		projectRun.Environment)
-	ioBody, err := doRequest("POST | PROJECT RUN |", http.MethodPut, url, body, c.AuthHeader)
+	q, err := query.FromObj(projectRun)
+	if err != nil {
+		return ProjectRunResponse{}, err
+	}
+
+	path := fmt.Sprintf("/api/project/%d/%s/run", projectRun.ProjectID, projectRun.Stage)
+	ioBody, err := doRequestNew("POST | PROJECT RUN |", http.MethodPut, c.APIURL, path, q, body, c.AuthHeader)
 	if err != nil {
 		return ProjectRunResponse{}, err
 	}

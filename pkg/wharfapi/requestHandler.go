@@ -129,6 +129,69 @@ func doRequest(from string, method string, URLStr string, body []byte, authHeade
 	return &response.Body, nil
 }
 
+func doRequestNew(from string, method string, host string, path string, q url.Values, body []byte, authHeader string) (*io.ReadCloser, error) {
+	u := url.URL{
+		Host:     host,
+		Path:     path,
+		RawQuery: q.Encode(),
+	}
+	urlStr := u.String()
+
+	var redactedURL = redactTokenInURL(urlStr)
+	var withRequestMeta = func(ev logger.Event) logger.Event {
+		return ev.
+			WithString("method", method).
+			WithString("url", redactedURL)
+	}
+	withRequestMeta(log.Debug()).Message(from)
+
+	req, err := http.NewRequest(method, urlStr, bytes.NewReader(body))
+	if err != nil {
+		log.Error().WithError(err).Message("Failed preparing HTTP request.")
+		return nil, err
+	}
+
+	if authHeader != "" {
+		req.Header.Add("Authorization", authHeader)
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(req)
+	if err != nil {
+		withRequestMeta(log.Error()).
+			WithError(err).
+			Message("Failed sending HTTP request.")
+		return nil, err
+	}
+
+	if isNonSuccessful(response.StatusCode) {
+		if response.StatusCode == http.StatusUnauthorized {
+			response.Body.Close()
+			withRequestMeta(log.Error()).
+				WithInt("status", response.StatusCode).
+				Message("Unauthorized.")
+			realm := response.Header.Get("WWW-Authenticate")
+			return nil, &AuthError{realm}
+		}
+
+		if problem.IsHTTPResponse(response) {
+			prob, err := problem.ParseHTTPResponse(response)
+			if err != nil {
+				return nil, fmt.Errorf("unexpected status code returned: %s: %w", response.Status, err)
+			}
+			return nil, prob
+		}
+
+		withRequestMeta(log.Warn()).
+			WithInt("status", response.StatusCode).
+			WithString("Content-Type", response.Header.Get("Content-Type")).
+			Messagef("Non-2xx should have responded with a Content-Type of %q.", problem.HTTPContentType)
+		return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
+	}
+
+	return &response.Body, nil
+}
+
 func isNonSuccessful(statusCode int) bool {
 	return statusCode < 200 || statusCode >= 300
 }
