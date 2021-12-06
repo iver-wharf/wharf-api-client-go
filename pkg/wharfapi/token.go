@@ -3,148 +3,69 @@ package wharfapi
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
+
+	"github.com/google/go-querystring/query"
+	"github.com/iver-wharf/wharf-api/pkg/model/request"
+	"github.com/iver-wharf/wharf-api/pkg/model/response"
 )
 
-// Token is a value used by the provider plugins to authenticate with the remote
-// providers.
-type Token struct {
-	TokenID  uint   `json:"tokenId"`
-	Token    string `json:"token"`
-	UserName string `json:"userName"`
+type TokenSearch struct {
+	Limit         *int     `url:"limit,omitempty"`
+	Offset        *int     `url:"offset,omitempty"`
+	OrderBy       []string `url:"orderby,omitempty"`
+	UserName      *string  `url:"userName,omitempty"`
+	UserNameMatch *string  `url:"userNameMatch,omitempty"`
 }
 
-// GetTokenByID fetches a token by ID by invoking the HTTP request:
+// GetToken fetches a token by ID by invoking the HTTP request:
 // 	GET /api/token/{tokenID}
-func (c Client) GetTokenByID(tokenID uint) (Token, error) {
-	newToken := Token{}
-
-	apiURL := fmt.Sprintf("%s/api/token/%v", c.APIURL, tokenID)
-	ioBody, err := doRequest("GET | TOKEN |", http.MethodGet, apiURL, []byte{}, c.AuthHeader)
-	if err != nil {
-		return newToken, err
-	}
-
-	defer (*ioBody).Close()
-
-	err = json.NewDecoder(*ioBody).Decode(&newToken)
-	if err != nil {
-		return newToken, err
-	}
-	return newToken, nil
+func (c Client) GetToken(tokenID uint) (response.Token, error) {
+	token := response.Token{}
+	path := fmt.Sprintf("/api/token/%d", tokenID)
+	err := c.GetDecoded(&token, "TOKEN", path, nil)
+	return token, err
 }
 
-// GetToken tries to search for a token using the username+token pair by
-// invoking the HTTP request:
-// 	POST /api/token/search
-func (c Client) GetToken(token string, userName string) (Token, error) {
-	newToken := Token{}
+// GetTokenList filters tokens based on the parameters by invoking the HTTP
+// request:
+// 	GET /api/token
+func (c Client) GetTokenList(params TokenSearch) ([]response.Token, error) {
+	tokens := response.PaginatedTokens{}
 
-	path := "/api/tokens/search"
-
-	data := url.Values{}
-	data.Set("Token", token)
-	if userName != "" {
-		data.Add("UserName", userName)
-	}
-
-	u, _ := url.ParseRequestURI(c.APIURL)
-	u.Path = path
-	u.RawQuery = data.Encode()
-
-	ioBody, err := doRequest("GET | TOKEN |", http.MethodPost, fmt.Sprintf("%v", u), []byte{}, c.AuthHeader)
+	q, err := query.Values(params)
 	if err != nil {
-		return newToken, err
+		return tokens.List, err
 	}
 
-	defer (*ioBody).Close()
-
-	var tokens []Token
-	err = json.NewDecoder(*ioBody).Decode(&tokens)
-	if err != nil {
-		return newToken, err
-	}
-
-	if len(tokens) == 0 {
-		return newToken, nil
-	}
-
-	return tokens[0], nil
+	path := "/api/token"
+	err = c.GetDecoded(&tokens, "TOKEN", path, q)
+	return tokens.List, err
 }
 
-// SearchToken tries to match the given token on the token field and username
-// field, by invoking the HTTP request:
-// 	POST /api/tokens/search
-func (c Client) SearchToken(token Token) ([]Token, error) {
-	body, err := json.Marshal(token)
-	if err != nil {
-		return nil, err
-	}
-
-	url := fmt.Sprintf("%s/api/tokens/search", c.APIURL)
-	ioBody, err := doRequest("SEARCH | TOKEN |", http.MethodPost, url, body, c.AuthHeader)
-	if err != nil {
-		return nil, err
-	}
-
-	defer (*ioBody).Close()
-
-	var foundTokens []Token
-	err = json.NewDecoder(*ioBody).Decode(&foundTokens)
-	if err != nil {
-		return nil, err
-	}
-
-	return foundTokens, nil
-}
-
-// PutToken tries to match an existing token by ID or username+token and updates
-// it, or adds a new a token if none matched, by invoking the HTTP request:
+// UpdateToken updates the token with the specified ID by invoking the HTTP request:
 // 	PUT /api/token
-func (c Client) PutToken(token Token) (Token, error) {
+func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.Token, error) {
+	updatedToken := response.Token{}
 	body, err := json.Marshal(token)
 	if err != nil {
-		return Token{}, err
+		return updatedToken, err
 	}
 
-	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
-	ioBody, err := doRequest("PUT | TOKEN |", http.MethodPut, apiURL, body, c.AuthHeader)
-	if err != nil {
-		return Token{}, err
-	}
-
-	defer (*ioBody).Close()
-
-	var newToken Token
-	if err := json.NewDecoder(*ioBody).Decode(&newToken); err != nil {
-		return Token{}, err
-	}
-
-	return newToken, nil
+	path := fmt.Sprintf("/api/token/%d", tokenID)
+	err = c.PutDecoded(&updatedToken, "TOKEN", path, nil, body)
+	return updatedToken, err
 }
 
-// PostToken adds a new a token by invoking the HTTP request:
+// CreateToken adds a new a token by invoking the HTTP request:
 // 	POST /api/token
-func (c Client) PostToken(token Token) (Token, error) {
-	newToken := Token{}
+func (c Client) CreateToken(token request.Token) (response.Token, error) {
+	newToken := response.Token{}
 	body, err := json.Marshal(token)
 	if err != nil {
 		return newToken, err
 	}
 
-	apiURL := fmt.Sprintf("%s/api/token", c.APIURL)
-	ioBody, err := doRequest("POST | TOKEN", http.MethodPost, apiURL, body, c.AuthHeader)
-	if err != nil {
-		return newToken, err
-	}
-
-	defer (*ioBody).Close()
-
-	err = json.NewDecoder(*ioBody).Decode(&newToken)
-	if err != nil {
-		return newToken, err
-	}
-
-	return newToken, nil
+	path := "/api/token"
+	err = c.PostDecoded(&newToken, "TOKEN", path, nil, body)
+	return newToken, err
 }

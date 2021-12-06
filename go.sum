@@ -147,6 +147,10 @@ github.com/google/btree v1.0.0/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
+github.com/google/go-cmp v0.5.2 h1:X2ev0eStA3AbceY54o37/0PQ/UWqKEiiO2dKL5OPaFM=
+github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-querystring v1.1.0 h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=
+github.com/google/go-querystring v1.1.0/go.mod h1:Kcdr2DB4koayq7X8pmAG4sNG59So17icRSOU623lUBU=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/martian v2.1.0+incompatible/go.mod h1:9I4somxYTbIHy5NJKHRl3wXiIaQGbYVAs8BPL6v8lEs=
 github.com/google/pprof v0.0.0-20181206194817-3ea8567a2e57/go.mod h1:zfwlbNMJ+OItoe0UupaVj+oy1omPYYDuagoSzA8v9mc=
@@ -193,8 +197,8 @@ github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpO
 github.com/hudl/fargo v1.3.0/go.mod h1:y3CKSmjA+wD2gak7sUSXTAoopbhU08POFhmITJgmKTg=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
-github.com/iver-wharf/wharf-api v0.0.0-20211118093658-dd0f4c593b81 h1:hA/vIC7AbA2sg7Iy8PjZhwjALLtEdwTeSm3IcYjH2PM=
-github.com/iver-wharf/wharf-api v0.0.0-20211118093658-dd0f4c593b81/go.mod h1:coTanfHb9WszCkSfZ9MVJcfRSKJKEk9MB15l9GS4ba0=
+github.com/iver-wharf/wharf-api v0.0.0-20211201082057-3c0f77ff1ac3 h1:jfG0WM3CJiCMJmzTPbQfGNXF/CcQnhNnT39hc6uTgGM=
+github.com/iver-wharf/wharf-api v0.0.0-20211201082057-3c0f77ff1ac3/go.mod h1:coTanfHb9WszCkSfZ9MVJcfRSKJKEk9MB15l9GS4ba0=
 github.com/iver-wharf/wharf-core v1.2.0 h1:iwtnBh6XbDyb/Z7pAMZMbXNIFM63fp/qS9DChxQ+ukA=
 github.com/iver-wharf/wharf-core v1.2.0/go.mod h1:dpYtdL52i17Aue7An6mJL9dICeulBDsGZO/PxZYHgrE=
 github.com/jackc/chunkreader v1.0.0/go.mod h1:RT6O25fNZIuasFJRyZ4R/Y2BbhasbmZXF9QQ7T3kePo=
