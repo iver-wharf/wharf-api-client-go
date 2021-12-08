@@ -62,7 +62,7 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 
 // CreateProvider creates a new provider by invoking the HTTP request:
 // 	POST /api/provider
-func (c Client) PostProvider(provider request.Provider) (response.Provider, error) {
+func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
 	newProvider := response.Provider{}
 	body, err := json.Marshal(provider)
 	if err != nil {
