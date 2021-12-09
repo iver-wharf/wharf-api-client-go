@@ -37,6 +37,18 @@ type ProjectRun struct {
 	Environment string `json:"environment" url:"environment"`
 }
 
+func (c Client) CreateProject(project request.Project) (response.Project, error) {
+	newProject := response.Project{}
+	body, err := json.Marshal(&project)
+	if err != nil {
+		return newProject, err
+	}
+
+	path := "/api/project"
+	err = c.PostDecoded(&newProject, "PROJECT", path, nil, body)
+	return newProject, err
+}
+
 // // ProjectRunResponse contains metadata about the newly started build.
 // type ProjectRunResponse = response.BuildReferenceWrapper
 
