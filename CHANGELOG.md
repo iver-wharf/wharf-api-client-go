@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.0.0 (WIP)
+
+- BREAKING: Updated to work with wharf-api v5.0.0. Functions now
+  also match the names used in wharf-api. (#29)
+
 ## v1.4.0 (2021-09-07)
 
 - Added methods for search endpoints: (#18)
