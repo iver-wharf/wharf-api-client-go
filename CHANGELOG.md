@@ -17,6 +17,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - BREAKING: Updated to work with wharf-api v5.0.0. Functions now
   also match the names used in wharf-api. (#29)
 
+- BREAKING: Removed the `wharfapi.Provider.UploadURL` field, which will be removed from
+  the `Provider` struct in `github.com/iver-wharf/wharf-api` in v5.0.0. (#21)
+
 ## v1.4.0 (2021-09-07)
 
 - Added methods for search endpoints: (#18)
