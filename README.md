@@ -13,12 +13,16 @@ into the database when importing from GitLab, GitHub, or Azure DevOps.
 
 ## Usage
 
+```console
+$ go get github.com/iver-wharf/wharf-api-client-go/v2
+```
+
 ```go
 package main
 
 import (
 	"fmt"
-	"github.com/iver-wharf/wharf-api-client-go/pkg/wharfapi"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/wharfapi"
 )
 
 func main() {
