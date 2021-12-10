@@ -28,15 +28,6 @@ type ProjectSearch struct {
 	Match            *string  `url:"match,omitempty"`
 }
 
-// ProjectRun is a range of options you start a build with. The ProjectID and
-// Stage fields are required when starting a build.
-type ProjectRun struct {
-	ProjectID   uint   `json:"projectId" url:"-"`
-	Stage       string `json:"stage" url:"-"`
-	Branch      string `json:"branch" url:"branch"`
-	Environment string `json:"environment" url:"environment"`
-}
-
 func (c Client) CreateProject(project request.Project) (response.Project, error) {
 	newProject := response.Project{}
 	body, err := json.Marshal(&project)
@@ -87,27 +78,4 @@ func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (re
 	path := fmt.Sprintf("/api/project/%d", projectID)
 	err = c.PutJSONUnmarshal(path, nil, body, &updatedProject)
 	return updatedProject, err
-}
-
-// PostProjectRun starts a new build by invoking the HTTP request:
-//  POST /api/project/{projectID}/{stage}/run
-func (c Client) StartProjectBuild(projectRun ProjectRun, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
-	newBuildRef := response.BuildReferenceWrapper{}
-
-	body, err := json.Marshal(inputs)
-	if err != nil {
-		return newBuildRef, err
-	}
-
-	q, err := query.Values(projectRun)
-	if err != nil {
-		return newBuildRef, err
-	}
-
-	path := fmt.Sprintf("/api/project/%d/%s/run", projectRun.ProjectID, projectRun.Stage)
-	err = c.PostJSONUnmarshal(path, q, body, &newBuildRef)
-	if err == nil {
-		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
-	}
-	return newBuildRef, err
 }

@@ -43,6 +43,14 @@ type BuildParam struct {
 	Value   string `json:"value"`
 }
 
+// ProjectStartBuild is a range of options you start a build with. The ProjectID and
+// Stage fields are required when starting a build.
+type ProjectStartBuild struct {
+	Stage       string `url:"stage"`
+	Branch      string `url:"branch,omitempty"`
+	Environment string `url:"environment,omitempty"`
+}
+
 // GetBuildList gets all builds by invoking the HTTP request:
 //  GET /api/build
 func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
@@ -94,4 +102,21 @@ func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	logs := []response.Log{}
 	err := c.GetUnmarshal(path, nil, &logs)
 	return logs, err
+}
+
+// StartProjectBuild starts a new build by invoking the HTTP request:
+//  POST /api/project/{projectID}/build
+func (c Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
+	newBuildRef := response.BuildReferenceWrapper{}
+	q, err := query.Values(params)
+	if err != nil {
+		return newBuildRef, err
+	}
+
+	path := fmt.Sprintf("/api/project/%d/build", projectID)
+	err = c.PostJSONUnmarshal(path, q, &inputs, &newBuildRef)
+	if err == nil {
+		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
+	}
+	return newBuildRef, err
 }
