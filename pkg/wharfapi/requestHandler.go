@@ -73,7 +73,7 @@ func redactTokenInURL(urlStr string) string {
 	return sanitized
 }
 
-func doRequestNew(from string, method string, baseURL string, path string, q url.Values, body []byte, authHeader string) ([]byte, error) {
+func doRequest(from string, method string, baseURL string, path string, q url.Values, body []byte, authHeader string) ([]byte, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err

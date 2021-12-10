@@ -35,7 +35,7 @@ type Client struct {
 type WharfClient Client
 
 func (c Client) Get(from, path string, q url.Values) ([]byte, error) {
-	return doRequestNew(fmt.Sprintf("GET | %s", from), http.MethodGet, c.APIURL, path, q, nil, c.AuthHeader)
+	return doRequest(fmt.Sprintf("GET | %s", from), http.MethodGet, c.APIURL, path, q, nil, c.AuthHeader)
 }
 
 func (c Client) GetDecoded(response interface{}, from, path string, q url.Values) error {
@@ -47,7 +47,7 @@ func (c Client) GetDecoded(response interface{}, from, path string, q url.Values
 }
 
 func (c Client) Post(from, path string, q url.Values, body []byte) ([]byte, error) {
-	return doRequestNew(fmt.Sprintf("POST | %s", from), http.MethodPost, c.APIURL, path, q, body, c.AuthHeader)
+	return doRequest(fmt.Sprintf("POST | %s", from), http.MethodPost, c.APIURL, path, q, body, c.AuthHeader)
 }
 
 func (c Client) PostDecoded(response interface{}, from, path string, q url.Values, body []byte) error {
@@ -59,7 +59,7 @@ func (c Client) PostDecoded(response interface{}, from, path string, q url.Value
 }
 
 func (c Client) Put(from, path string, q url.Values, body []byte) ([]byte, error) {
-	return doRequestNew(fmt.Sprintf("PUT | %s", from), http.MethodGet, c.APIURL, path, q, body, c.AuthHeader)
+	return doRequest(fmt.Sprintf("PUT | %s", from), http.MethodGet, c.APIURL, path, q, body, c.AuthHeader)
 }
 func (c Client) PutDecoded(response interface{}, from, path string, q url.Values, body []byte) error {
 	bytes, err := c.Put(from, path, q, body)
