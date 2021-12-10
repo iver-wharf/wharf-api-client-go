@@ -14,6 +14,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.0.0 (WIP)
 
+- BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
+  to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
+
 - Removed the `wharfapi.Provider.UploadURL` field, which will be removed from
   the `Provider` struct in `github.com/iver-wharf/wharf-api` in v5.0.0. (#21)
 
