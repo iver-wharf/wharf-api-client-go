@@ -52,7 +52,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 		return builds, err
 	}
 	path := "/api/build"
-	err = c.GetDecoded(path, q, &builds)
+	err = c.GetUnmarshal(path, q, &builds)
 	return builds, err
 }
 
@@ -61,7 +61,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 func (c Client) GetBuild(buildID uint) (response.Build, error) {
 	path := fmt.Sprintf("/api/build/%d", buildID)
 	build := response.Build{}
-	err := c.GetDecoded(path, nil, &build)
+	err := c.GetUnmarshal(path, nil, &build)
 	return build, err
 }
 
@@ -70,7 +70,7 @@ func (c Client) GetBuild(buildID uint) (response.Build, error) {
 func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
 	updatedBuild := response.Build{}
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
-	err := c.PutJSONDecoded(path, nil, &status, &updatedBuild)
+	err := c.PutJSONUnmarshal(path, nil, &status, &updatedBuild)
 	return updatedBuild, err
 }
 
@@ -92,6 +92,6 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
 	logs := []response.Log{}
-	err := c.GetDecoded(path, nil, &logs)
+	err := c.GetUnmarshal(path, nil, &logs)
 	return logs, err
 }

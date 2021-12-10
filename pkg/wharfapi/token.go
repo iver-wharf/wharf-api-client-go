@@ -22,7 +22,7 @@ type TokenSearch struct {
 func (c Client) GetToken(tokenID uint) (response.Token, error) {
 	token := response.Token{}
 	path := fmt.Sprintf("/api/token/%d", tokenID)
-	err := c.GetDecoded(path, nil, &token)
+	err := c.GetUnmarshal(path, nil, &token)
 	return token, err
 }
 
@@ -38,7 +38,7 @@ func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, erro
 	}
 
 	path := "/api/token"
-	err = c.GetDecoded(path, q, &tokens)
+	err = c.GetUnmarshal(path, q, &tokens)
 	return tokens, err
 }
 
@@ -52,7 +52,7 @@ func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.T
 	}
 
 	path := fmt.Sprintf("/api/token/%d", tokenID)
-	err = c.PutJSONDecoded(path, nil, body, &updatedToken)
+	err = c.PutJSONUnmarshal(path, nil, body, &updatedToken)
 	return updatedToken, err
 }
 
@@ -66,6 +66,6 @@ func (c Client) CreateToken(token request.Token) (response.Token, error) {
 	}
 
 	path := "/api/token"
-	err = c.PostJSONDecoded(path, nil, body, &newToken)
+	err = c.PostJSONUnmarshal(path, nil, body, &newToken)
 	return newToken, err
 }

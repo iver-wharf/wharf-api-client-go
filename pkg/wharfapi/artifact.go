@@ -29,7 +29,7 @@ func (c Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (respo
 		return artifacts, err
 	}
 	path := fmt.Sprintf("/api/build/%d/artifact", buildID)
-	err = c.GetDecoded(path, q, &artifacts)
+	err = c.GetUnmarshal(path, q, &artifacts)
 	return artifacts, err
 }
 
@@ -38,6 +38,6 @@ func (c Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (respo
 func (c Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, error) {
 	artifact := response.Artifact{}
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
-	err := c.GetDecoded(path, nil, &artifact)
+	err := c.GetUnmarshal(path, nil, &artifact)
 	return artifact, err
 }

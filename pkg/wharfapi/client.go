@@ -41,7 +41,7 @@ func (c Client) Get(path string, q url.Values) ([]byte, error) {
 	return doRequest(req)
 }
 
-func (c Client) GetDecoded(path string, q url.Values, response interface{}) error {
+func (c Client) GetUnmarshal(path string, q url.Values, response interface{}) error {
 	bytes, err := c.Get(path, q)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (c Client) PostJSON(path string, q url.Values, body interface{}) ([]byte, e
 	return c.Post(path, q, bodyBytes)
 }
 
-func (c Client) PostJSONDecoded(path string, q url.Values, body interface{}, response interface{}) error {
+func (c Client) PostJSONUnmarshal(path string, q url.Values, body interface{}, response interface{}) error {
 	responseBytes, err := c.PostJSON(path, q, body)
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func (c Client) PutJSON(path string, q url.Values, body interface{}) ([]byte, er
 	return c.Put(path, q, bodyBytes)
 }
 
-func (c Client) PutJSONDecoded(path string, q url.Values, body interface{}, response interface{}) error {
+func (c Client) PutJSONUnmarshal(path string, q url.Values, body interface{}, response interface{}) error {
 	responseBytes, err := c.PutJSON(path, q, body)
 	if err != nil {
 		return err

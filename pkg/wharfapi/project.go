@@ -45,7 +45,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 	}
 
 	path := "/api/project"
-	err = c.PostJSONDecoded(path, nil, body, &newProject)
+	err = c.PostJSONUnmarshal(path, nil, body, &newProject)
 	return newProject, err
 }
 
@@ -57,7 +57,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 func (c Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
 	project := response.Project{}
-	err := c.GetDecoded(path, nil, &project)
+	err := c.GetUnmarshal(path, nil, &project)
 	return project, err
 }
 
@@ -71,7 +71,7 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 		return projects, err
 	}
 	path := "/api/project"
-	err = c.GetDecoded(path, q, &projects)
+	err = c.GetUnmarshal(path, q, &projects)
 	return projects, err
 }
 
@@ -85,7 +85,7 @@ func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (re
 	}
 
 	path := fmt.Sprintf("/api/project/%d", projectID)
-	err = c.PutJSONDecoded(path, nil, body, &updatedProject)
+	err = c.PutJSONUnmarshal(path, nil, body, &updatedProject)
 	return updatedProject, err
 }
 
@@ -105,7 +105,7 @@ func (c Client) StartProjectBuild(projectRun ProjectRun, inputs request.BuildInp
 	}
 
 	path := fmt.Sprintf("/api/project/%d/%s/run", projectRun.ProjectID, projectRun.Stage)
-	err = c.PostJSONDecoded(path, q, body, &newBuildRef)
+	err = c.PostJSONUnmarshal(path, q, body, &newBuildRef)
 	if err == nil {
 		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
 	}

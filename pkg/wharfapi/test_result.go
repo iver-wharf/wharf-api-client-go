@@ -12,7 +12,7 @@ import (
 func (c Client) GetBuildAllTestResultDetailList(buildID uint) (response.PaginatedTestResultDetails, error) {
 	details := response.PaginatedTestResultDetails{}
 	path := fmt.Sprintf("/api/build/%d/test-result/detail", buildID)
-	err := c.GetDecoded(path, nil, &details)
+	err := c.GetUnmarshal(path, nil, &details)
 	return details, err
 }
 
@@ -22,7 +22,7 @@ func (c Client) GetBuildAllTestResultDetailList(buildID uint) (response.Paginate
 func (c Client) GetBuildAllTestResultSummaryList(buildID uint) (response.PaginatedTestResultSummaries, error) {
 	summaries := response.PaginatedTestResultSummaries{}
 	path := fmt.Sprintf("/api/build/%d/test-result/summary", buildID)
-	err := c.GetDecoded(path, nil, &summaries)
+	err := c.GetUnmarshal(path, nil, &summaries)
 	return summaries, err
 }
 
@@ -32,7 +32,7 @@ func (c Client) GetBuildAllTestResultSummaryList(buildID uint) (response.Paginat
 func (c Client) GetBuildTestResultSummary(buildID, artifactID uint) (response.TestResultSummary, error) {
 	summary := response.TestResultSummary{}
 	path := fmt.Sprintf("/api/build/%d/test-result/summary/%d", buildID, artifactID)
-	err := c.GetDecoded(path, nil, &summary)
+	err := c.GetUnmarshal(path, nil, &summary)
 	return summary, err
 }
 
@@ -42,7 +42,7 @@ func (c Client) GetBuildTestResultSummary(buildID, artifactID uint) (response.Te
 func (c Client) GetBuildTestResultDetailList(buildID, artifactID uint) (response.PaginatedTestResultDetails, error) {
 	details := response.PaginatedTestResultDetails{}
 	path := fmt.Sprintf("/api/build/%d/test-result/summary/%d/detail", buildID, artifactID)
-	err := c.GetDecoded(path, nil, &details)
+	err := c.GetUnmarshal(path, nil, &details)
 	return details, err
 }
 
@@ -52,6 +52,6 @@ func (c Client) GetBuildTestResultDetailList(buildID, artifactID uint) (response
 func (c Client) GetBuildAllTestResultListSummary(buildID uint) (response.TestResultListSummary, error) {
 	listSummary := response.TestResultListSummary{}
 	path := fmt.Sprintf("/api/build%d/test-result/list-summary", buildID)
-	err := c.GetDecoded(path, nil, &listSummary)
+	err := c.GetUnmarshal(path, nil, &listSummary)
 	return listSummary, err
 }

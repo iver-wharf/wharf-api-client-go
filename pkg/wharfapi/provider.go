@@ -25,7 +25,7 @@ type ProviderSearch struct {
 func (c Client) GetProvider(providerID uint) (response.Provider, error) {
 	provider := response.Provider{}
 	path := fmt.Sprintf("/api/provider/%d", providerID)
-	err := c.GetDecoded(path, nil, &provider)
+	err := c.GetUnmarshal(path, nil, &provider)
 	return provider, err
 }
 
@@ -41,7 +41,7 @@ func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProvid
 	}
 
 	path := "/api/provider"
-	err = c.GetDecoded(path, q, &providers)
+	err = c.GetUnmarshal(path, q, &providers)
 	return providers, err
 }
 
@@ -56,7 +56,7 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 	}
 
 	path := fmt.Sprintf("/api/provider/%d", providerID)
-	err = c.PutJSONDecoded(path, nil, body, &updatedProvider)
+	err = c.PutJSONUnmarshal(path, nil, body, &updatedProvider)
 	return updatedProvider, err
 }
 
@@ -70,6 +70,6 @@ func (c Client) CreateProvider(provider request.Provider) (response.Provider, er
 	}
 
 	path := "/api/provider"
-	err = c.PostJSONDecoded(path, nil, body, &newProvider)
+	err = c.PostJSONUnmarshal(path, nil, body, &newProvider)
 	return newProvider, err
 }

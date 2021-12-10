@@ -13,7 +13,7 @@ import (
 func (c Client) CreateProjectBranch(projectID uint, branch request.Branch) (response.Branch, error) {
 	newBranch := response.Branch{}
 	path := fmt.Sprintf("/api/project/%d/branch", projectID)
-	err := c.PostJSONDecoded(path, nil, &branch, &newBranch)
+	err := c.PostJSONUnmarshal(path, nil, &branch, &newBranch)
 	return newBranch, err
 }
 
@@ -24,7 +24,7 @@ func (c Client) CreateProjectBranch(projectID uint, branch request.Branch) (resp
 func (c Client) UpdateProjectBranchList(projectID uint, branches []request.Branch) ([]response.Branch, error) {
 	var newBranches []response.Branch
 	path := fmt.Sprintf("/api/project/%d/branch", projectID)
-	err := c.PutJSONDecoded(path, nil, &branches, &newBranches)
+	err := c.PutJSONUnmarshal(path, nil, &branches, &newBranches)
 	return newBranches, err
 }
 
@@ -34,6 +34,6 @@ func (c Client) UpdateProjectBranchList(projectID uint, branches []request.Branc
 func (c Client) GetProjectBranchList(projectID uint) ([]response.Branch, error) {
 	path := fmt.Sprintf("/api/project/%d/branch", projectID)
 	branches := []response.Branch{}
-	err := c.GetDecoded(path, nil, &branches)
+	err := c.GetUnmarshal(path, nil, &branches)
 	return branches, err
 }
