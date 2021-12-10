@@ -21,33 +21,33 @@ type ProviderSearch struct {
 }
 
 // GetProvider fetches a provider by ID by invoking the HTTP request:
-// 	GET /api/provider/{providerID}
+//  GET /api/provider/{providerID}
 func (c Client) GetProvider(providerID uint) (response.Provider, error) {
 	provider := response.Provider{}
 	path := fmt.Sprintf("/api/provider/%d", providerID)
-	err := c.GetDecoded(&provider, "PROVIDER", path, nil)
+	err := c.GetDecoded(path, nil, &provider)
 	return provider, err
 }
 
 // GetProviderList filters providers based on the parameters by invoking the HTTP
 // request:
-// 	GET /api/provider
-func (c Client) GetProviderList(params ProviderSearch) ([]response.Provider, error) {
+//  GET /api/provider
+func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
 	providers := response.PaginatedProviders{}
 
 	q, err := query.Values(params)
 	if err != nil {
-		return providers.List, err
+		return providers, err
 	}
 
 	path := "/api/provider"
-	err = c.GetDecoded(&providers, "ARTIFACT", path, q)
-	return providers.List, err
+	err = c.GetDecoded(path, q, &providers)
+	return providers, err
 }
 
 // UpdateProvider updates the provider with the specified ID by invoking the
 // HTTP request:
-// 	PUT /api/provider/{providerID}
+//  PUT /api/provider/{providerID}
 func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
 	updatedProvider := response.Provider{}
 	body, err := json.Marshal(provider)
@@ -56,12 +56,12 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 	}
 
 	path := fmt.Sprintf("/api/provider/%d", providerID)
-	err = c.PutDecoded(&updatedProvider, "PROVIDER", path, nil, body)
+	err = c.PutJSONDecoded(path, nil, body, &updatedProvider)
 	return updatedProvider, err
 }
 
 // CreateProvider creates a new provider by invoking the HTTP request:
-// 	POST /api/provider
+//  POST /api/provider
 func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
 	newProvider := response.Provider{}
 	body, err := json.Marshal(provider)
@@ -70,6 +70,6 @@ func (c Client) CreateProvider(provider request.Provider) (response.Provider, er
 	}
 
 	path := "/api/provider"
-	err = c.PostDecoded(&newProvider, "PROVIDER", path, nil, body)
+	err = c.PostJSONDecoded(path, nil, body, &newProvider)
 	return newProvider, err
 }

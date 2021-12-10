@@ -6,25 +6,34 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/go-querystring/query"
 	"github.com/iver-wharf/wharf-api/pkg/model/request"
 	"github.com/iver-wharf/wharf-api/pkg/model/response"
-	"gopkg.in/guregu/null.v4"
 )
 
-// Build is the metadata about a code execution for a certain project inside
-// Wharf.
-type Build struct {
-	BuildID     uint         `json:"buildId"`
-	StatusID    BuildStatus  `json:"statusId"`
-	ProjectID   uint         `json:"projectId"`
-	ScheduledOn *time.Time   `json:"scheduledOn"`
-	StartedOn   *time.Time   `json:"startedOn"`
-	CompletedOn *time.Time   `json:"finishedOn"`
-	GitBranch   string       `json:"gitBranch"`
-	Environment null.String  `json:"environment"`
-	Stage       string       `json:"stage"`
-	Params      []BuildParam `json:"params"`
-	IsInvalid   bool         `json:"isInvalid"`
+type BuildSearch struct {
+	Limit     *int     `url:"limit,omitempty"`
+	Offset    *int     `url:"offset,omitempty"`
+	OrderBy   []string `url:"orderby,omitempty"`
+	ProjectID *uint    `url:"projectId,omitempty"`
+
+	ScheduledAfter  *time.Time `url:"scheduledAfter,omitempty"`
+	ScheduledBefore *time.Time `url:"scheduledBefore,omitempty"`
+	FinishedAfter   *time.Time `url:"finishedAfter,omitempty"`
+	FinishedBefore  *time.Time `url:"finishedBefore,omitempty"`
+
+	IsInvalid *bool   `url:"isInvalid,omitempty"`
+	Status    *string `url:"status,omitempty"`
+	StatusID  *int    `url:"statusId,omitempty"`
+
+	Environment *string `url:"environment,omitempty"`
+	GitBranch   *string `url:"gitBranch,omitempty"`
+	Stage       *string `url:"stage,omitempty"`
+
+	EnvironmentMatch *string `url:"environmentMatch,omitempty"`
+	GitBranchMatch   *string `url:"gitBranchMatch,omitempty"`
+	StageMatch       *string `url:"stageMatch,omitempty"`
+	Match            *string `url:"match,omitempty"`
 }
 
 // BuildParam is an input parameter provided by the user or service that started
@@ -37,14 +46,15 @@ type BuildParam struct {
 
 // GetBuildList gets all builds by invoking the HTTP request:
 //  GET /api/build
-func (c Client) GetBuildList() ([]response.Build, error) {
-	path := "/api/build"
-	list := []response.Build{}
-	err := c.PutDecoded(&list, "BUILD", path, nil, nil)
+func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
+	builds := response.PaginatedBuilds{}
+	q, err := query.Values(&params)
 	if err != nil {
-		return []response.Build{}, err
+		return builds, err
 	}
-	return list, nil
+	path := "/api/build"
+	err = c.GetDecoded(path, q, &builds)
+	return builds, err
 }
 
 // GetBuild gets a build by invoking the HTTP request:
@@ -52,26 +62,21 @@ func (c Client) GetBuildList() ([]response.Build, error) {
 func (c Client) GetBuild(buildID uint) (response.Build, error) {
 	path := fmt.Sprintf("/api/build/%d", buildID)
 	build := response.Build{}
-	err := c.GetDecoded(&build, "BUILD", path, nil)
+	err := c.GetDecoded(path, nil, &build)
 	return build, err
 }
 
 // UpdateBuildStatus updates a build by invoking the HTTP request:
-// 	PUT /api/build/{buildId}/status
+//  PUT /api/build/{buildId}/status
 func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
 	updatedBuild := response.Build{}
-	body, err := json.Marshal(&status)
-	if err != nil {
-		return updatedBuild, err
-	}
-
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
-	err = c.PutDecoded(&updatedBuild, "BUILD", path, nil, body)
+	err := c.PutJSONDecoded(path, nil, &status, &updatedBuild)
 	return updatedBuild, err
 }
 
 // CreateBuildLog adds a new log to a build by invoking the HTTP request:
-// 	POST /api/build/{buildId}/log
+//  POST /api/build/{buildId}/log
 func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
 	body, err := json.Marshal(buildLog)
 	if err != nil {
@@ -79,7 +84,7 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 	}
 
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	_, err = c.Post("BUILD", path, nil, body)
+	_, err = c.Post(path, nil, body)
 	return err
 }
 
@@ -87,9 +92,9 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 //  GET /api/build/{buildId}/log
 func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	list := []response.Log{}
-	err := c.GetDecoded(&list, "BUILD", path, nil)
-	return list, err
+	logs := []response.Log{}
+	err := c.GetDecoded(path, nil, &logs)
+	return logs, err
 }
 
 // StreamBuildLog is not implemented yet.

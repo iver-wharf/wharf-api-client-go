@@ -45,7 +45,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 	}
 
 	path := "/api/project"
-	err = c.PostDecoded(&newProject, "PROJECT", path, nil, body)
+	err = c.PostJSONDecoded(path, nil, body, &newProject)
 	return newProject, err
 }
 
@@ -53,31 +53,30 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 // type ProjectRunResponse = response.BuildReferenceWrapper
 
 // GetProjectByID fetches a project by ID by invoking the HTTP request:
-// 	GET /api/project/{projectID}
+//  GET /api/project/{projectID}
 func (c Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
 	project := response.Project{}
-	err := c.GetDecoded(&project, "PROJECT", path, nil)
+	err := c.GetDecoded(path, nil, &project)
 	return project, err
 }
 
 // GetProjectList filters projects based on the parameters by invoking the HTTP
 // request:
-// 	GET /api/project
-func (c Client) GetProjectList(params ProjectSearch) ([]response.Project, error) {
+//  GET /api/project
+func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects, error) {
+	projects := response.PaginatedProjects{}
 	q, err := query.Values(params)
 	if err != nil {
-		return nil, err
+		return projects, err
 	}
-
 	path := "/api/project"
-	projects := response.PaginatedProjects{}
-	err = c.GetDecoded(&projects, "PROJECT", path, q)
-	return projects.List, err
+	err = c.GetDecoded(path, q, &projects)
+	return projects, err
 }
 
 // UpdateProject updates a project by ID by invoking the HTTP request:
-// 	PUT /api/project/{projectID}
+//  PUT /api/project/{projectID}
 func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
 	updatedProject := response.Project{}
 	body, err := json.Marshal(project)
@@ -86,12 +85,12 @@ func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (re
 	}
 
 	path := fmt.Sprintf("/api/project/%d", projectID)
-	err = c.PutDecoded(&updatedProject, "PROJECT", path, nil, body)
+	err = c.PutJSONDecoded(path, nil, body, &updatedProject)
 	return updatedProject, err
 }
 
 // PostProjectRun starts a new build by invoking the HTTP request:
-// 	POST /api/project/{projectID}/{stage}/run
+//  POST /api/project/{projectID}/{stage}/run
 func (c Client) StartProjectBuild(projectRun ProjectRun, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
 	newBuildRef := response.BuildReferenceWrapper{}
 
@@ -106,7 +105,7 @@ func (c Client) StartProjectBuild(projectRun ProjectRun, inputs request.BuildInp
 	}
 
 	path := fmt.Sprintf("/api/project/%d/%s/run", projectRun.ProjectID, projectRun.Stage)
-	err = c.PostDecoded(&newBuildRef, "PROJECT", path, q, body)
+	err = c.PostJSONDecoded(path, q, body, &newBuildRef)
 	if err == nil {
 		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
 	}

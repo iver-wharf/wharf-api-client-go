@@ -22,18 +22,16 @@ type ArtifactSearch struct {
 
 // GetBuildArtifactList filters artifacts based on the parameters by invoking the HTTP
 // request:
-// 	GET /api/build/{buildId}/artifact
-func (c Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) ([]response.Artifact, error) {
+//  GET /api/build/{buildId}/artifact
+func (c Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (response.PaginatedArtifacts, error) {
 	artifacts := response.PaginatedArtifacts{}
-
 	q, err := query.Values(params)
 	if err != nil {
-		return artifacts.List, err
+		return artifacts, err
 	}
-
 	path := fmt.Sprintf("/api/build/%d/artifact", buildID)
-	err = c.GetDecoded(&artifacts, "ARTIFACT", path, q)
-	return artifacts.List, err
+	err = c.GetDecoded(path, q, &artifacts)
+	return artifacts, err
 }
 
 // GetBuildArtifact gets an artifact by invoking the HTTP request:
@@ -41,7 +39,7 @@ func (c Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) ([]res
 func (c Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, error) {
 	artifact := response.Artifact{}
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
-	err := c.GetDecoded(&artifact, "ARTIFACT", path, nil)
+	err := c.GetDecoded(path, nil, &artifact)
 	return artifact, err
 }
 

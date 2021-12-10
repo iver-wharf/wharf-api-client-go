@@ -2,7 +2,6 @@ package wharfapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -34,37 +33,70 @@ type Client struct {
 // future release.
 type WharfClient Client
 
-func (c Client) Get(from, path string, q url.Values) ([]byte, error) {
-	return doRequest(fmt.Sprintf("GET | %s", from), http.MethodGet, c.APIURL, path, q, nil, c.AuthHeader)
+func (c Client) Get(path string, q url.Values) ([]byte, error) {
+	req, err := c.NewRequest(http.MethodGet, path, q, nil)
+	if err != nil {
+		return nil, err
+	}
+	return doRequest(req)
 }
 
-func (c Client) GetDecoded(response interface{}, from, path string, q url.Values) error {
-	bytes, err := c.Get(from, path, q)
+func (c Client) GetDecoded(path string, q url.Values, response interface{}) error {
+	bytes, err := c.Get(path, q)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(bytes, response)
 }
 
-func (c Client) Post(from, path string, q url.Values, body []byte) ([]byte, error) {
-	return doRequest(fmt.Sprintf("POST | %s", from), http.MethodPost, c.APIURL, path, q, body, c.AuthHeader)
+func (c Client) Post(path string, q url.Values, body []byte) ([]byte, error) {
+	req, err := c.NewRequest(http.MethodPost, path, q, body)
+	if err != nil {
+		return nil, err
+	}
+	return doRequest(req)
 }
 
-func (c Client) PostDecoded(response interface{}, from, path string, q url.Values, body []byte) error {
-	bytes, err := c.Post(from, path, q, body)
+func (c Client) PostJSON(path string, q url.Values, body interface{}) ([]byte, error) {
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return c.Post(path, q, bodyBytes)
+}
+
+func (c Client) PostJSONDecoded(path string, q url.Values, body interface{}, response interface{}) error {
+	responseBytes, err := c.PostJSON(path, q, body)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(bytes, response)
+	return json.Unmarshal(responseBytes, response)
 }
 
-func (c Client) Put(from, path string, q url.Values, body []byte) ([]byte, error) {
-	return doRequest(fmt.Sprintf("PUT | %s", from), http.MethodGet, c.APIURL, path, q, body, c.AuthHeader)
+func (c Client) Put(path string, q url.Values, body []byte) ([]byte, error) {
+	req, err := c.NewRequest(http.MethodPut, path, q, body)
+	if err != nil {
+		return nil, err
+	}
+	return doRequest(req)
 }
-func (c Client) PutDecoded(response interface{}, from, path string, q url.Values, body []byte) error {
-	bytes, err := c.Put(from, path, q, body)
+
+func (c Client) PutJSON(path string, q url.Values, body interface{}) ([]byte, error) {
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return c.Put(path, q, bodyBytes)
+}
+
+func (c Client) PutJSONDecoded(path string, q url.Values, body interface{}, response interface{}) error {
+	responseBytes, err := c.PutJSON(path, q, body)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(bytes, response)
+	return json.Unmarshal(responseBytes, response)
+}
+
+func (c Client) NewRequest(method, path string, q url.Values, body []byte) (*http.Request, error) {
+	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
 }
