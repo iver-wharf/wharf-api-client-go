@@ -35,14 +35,6 @@ type BuildSearch struct {
 	Match            *string `url:"match,omitempty"`
 }
 
-// BuildParam is an input parameter provided by the user or service that started
-// the build.
-type BuildParam struct {
-	BuildID uint   `json:"buildId"`
-	Name    string `json:"name"`
-	Value   string `json:"value"`
-}
-
 // ProjectStartBuild is a range of options you start a build with. The ProjectID and
 // Stage fields are required when starting a build.
 type ProjectStartBuild struct {
