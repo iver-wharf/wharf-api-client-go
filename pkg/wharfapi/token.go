@@ -20,7 +20,7 @@ type TokenSearch struct {
 // GetToken fetches a token by ID by invoking the HTTP request:
 //  GET /api/token/{tokenID}
 func (c Client) GetToken(tokenID uint) (response.Token, error) {
-	token := response.Token{}
+	var token response.Token
 	path := fmt.Sprintf("/api/token/%d", tokenID)
 	err := c.GetUnmarshal(path, nil, &token)
 	return token, err
@@ -30,7 +30,7 @@ func (c Client) GetToken(tokenID uint) (response.Token, error) {
 // request:
 //  GET /api/token
 func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, error) {
-	tokens := response.PaginatedTokens{}
+	var tokens response.PaginatedTokens
 
 	q, err := query.Values(params)
 	if err != nil {
@@ -45,7 +45,7 @@ func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, erro
 // UpdateToken updates the token with the specified ID by invoking the HTTP request:
 //  PUT /api/token
 func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.Token, error) {
-	updatedToken := response.Token{}
+	var updatedToken response.Token
 	body, err := json.Marshal(token)
 	if err != nil {
 		return updatedToken, err
@@ -59,7 +59,7 @@ func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.T
 // CreateToken adds a new a token by invoking the HTTP request:
 //  POST /api/token
 func (c Client) CreateToken(token request.Token) (response.Token, error) {
-	newToken := response.Token{}
+	var newToken response.Token
 	body, err := json.Marshal(token)
 	if err != nil {
 		return newToken, err

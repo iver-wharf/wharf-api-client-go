@@ -46,7 +46,7 @@ type ProjectStartBuild struct {
 // GetBuildList gets all builds by invoking the HTTP request:
 //  GET /api/build
 func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
-	builds := response.PaginatedBuilds{}
+	var builds response.PaginatedBuilds
 	q, err := query.Values(&params)
 	if err != nil {
 		return builds, err
@@ -60,7 +60,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 //  GET /api/build/{buildId}
 func (c Client) GetBuild(buildID uint) (response.Build, error) {
 	path := fmt.Sprintf("/api/build/%d", buildID)
-	build := response.Build{}
+	var build response.Build
 	err := c.GetUnmarshal(path, nil, &build)
 	return build, err
 }
@@ -68,7 +68,7 @@ func (c Client) GetBuild(buildID uint) (response.Build, error) {
 // UpdateBuildStatus updates a build by invoking the HTTP request:
 //  PUT /api/build/{buildId}/status
 func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
-	updatedBuild := response.Build{}
+	var updatedBuild response.Build
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
 	err := c.PutJSONUnmarshal(path, nil, &status, &updatedBuild)
 	return updatedBuild, err
@@ -91,7 +91,7 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 //  GET /api/build/{buildId}/log
 func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	logs := []response.Log{}
+	var logs []response.Log
 	err := c.GetUnmarshal(path, nil, &logs)
 	return logs, err
 }
@@ -99,7 +99,7 @@ func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 // StartProjectBuild starts a new build by invoking the HTTP request:
 //  POST /api/project/{projectID}/build
 func (c Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
-	newBuildRef := response.BuildReferenceWrapper{}
+	var newBuildRef response.BuildReferenceWrapper
 	q, err := query.Values(params)
 	if err != nil {
 		return newBuildRef, err

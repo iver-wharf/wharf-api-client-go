@@ -10,7 +10,7 @@ import (
 // details for the specified build by invoking the HTTP request:
 //  GET /api/build/{buildId}/test-result/detail
 func (c Client) GetBuildAllTestResultDetailList(buildID uint) (response.PaginatedTestResultDetails, error) {
-	details := response.PaginatedTestResultDetails{}
+	var details response.PaginatedTestResultDetails
 	path := fmt.Sprintf("/api/build/%d/test-result/detail", buildID)
 	err := c.GetUnmarshal(path, nil, &details)
 	return details, err
@@ -20,7 +20,7 @@ func (c Client) GetBuildAllTestResultDetailList(buildID uint) (response.Paginate
 // summaries for the specified build by invoking the HTTP request:
 //  GET /api/build/{buildId}/test-result/summary
 func (c Client) GetBuildAllTestResultSummaryList(buildID uint) (response.PaginatedTestResultSummaries, error) {
-	summaries := response.PaginatedTestResultSummaries{}
+	var summaries response.PaginatedTestResultSummaries
 	path := fmt.Sprintf("/api/build/%d/test-result/summary", buildID)
 	err := c.GetUnmarshal(path, nil, &summaries)
 	return summaries, err
@@ -30,7 +30,7 @@ func (c Client) GetBuildAllTestResultSummaryList(buildID uint) (response.Paginat
 // invoking the HTTP request:
 //  GET /api/build/{buildId}/test-result/summary/{artifactId}
 func (c Client) GetBuildTestResultSummary(buildID, artifactID uint) (response.TestResultSummary, error) {
-	summary := response.TestResultSummary{}
+	var summary response.TestResultSummary
 	path := fmt.Sprintf("/api/build/%d/test-result/summary/%d", buildID, artifactID)
 	err := c.GetUnmarshal(path, nil, &summary)
 	return summary, err
@@ -40,7 +40,7 @@ func (c Client) GetBuildTestResultSummary(buildID, artifactID uint) (response.Te
 // test result summary by invoking the HTTP request:
 //  GET /api/build/{buildId}/test-result/summary/{artifactId}/detail
 func (c Client) GetBuildTestResultDetailList(buildID, artifactID uint) (response.PaginatedTestResultDetails, error) {
-	details := response.PaginatedTestResultDetails{}
+	var details response.PaginatedTestResultDetails
 	path := fmt.Sprintf("/api/build/%d/test-result/summary/%d/detail", buildID, artifactID)
 	err := c.GetUnmarshal(path, nil, &details)
 	return details, err
@@ -50,7 +50,7 @@ func (c Client) GetBuildTestResultDetailList(buildID, artifactID uint) (response
 // the specified build.
 //  GET /api/build/{buildId}/test-result/list-summary
 func (c Client) GetBuildAllTestResultListSummary(buildID uint) (response.TestResultListSummary, error) {
-	listSummary := response.TestResultListSummary{}
+	var listSummary response.TestResultListSummary
 	path := fmt.Sprintf("/api/build%d/test-result/list-summary", buildID)
 	err := c.GetUnmarshal(path, nil, &listSummary)
 	return listSummary, err

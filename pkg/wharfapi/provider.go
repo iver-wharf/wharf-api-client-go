@@ -23,7 +23,7 @@ type ProviderSearch struct {
 // GetProvider fetches a provider by ID by invoking the HTTP request:
 //  GET /api/provider/{providerID}
 func (c Client) GetProvider(providerID uint) (response.Provider, error) {
-	provider := response.Provider{}
+	var provider response.Provider
 	path := fmt.Sprintf("/api/provider/%d", providerID)
 	err := c.GetUnmarshal(path, nil, &provider)
 	return provider, err
@@ -33,7 +33,7 @@ func (c Client) GetProvider(providerID uint) (response.Provider, error) {
 // request:
 //  GET /api/provider
 func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
-	providers := response.PaginatedProviders{}
+	var providers response.PaginatedProviders
 
 	q, err := query.Values(params)
 	if err != nil {
@@ -49,7 +49,7 @@ func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProvid
 // HTTP request:
 //  PUT /api/provider/{providerID}
 func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
-	updatedProvider := response.Provider{}
+	var updatedProvider response.Provider
 	body, err := json.Marshal(provider)
 	if err != nil {
 		return updatedProvider, err
@@ -63,7 +63,7 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 // CreateProvider creates a new provider by invoking the HTTP request:
 //  POST /api/provider
 func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
-	newProvider := response.Provider{}
+	var newProvider response.Provider
 	body, err := json.Marshal(provider)
 	if err != nil {
 		return newProvider, err

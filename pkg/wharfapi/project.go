@@ -29,7 +29,7 @@ type ProjectSearch struct {
 }
 
 func (c Client) CreateProject(project request.Project) (response.Project, error) {
-	newProject := response.Project{}
+	var newProject response.Project
 	body, err := json.Marshal(&project)
 	if err != nil {
 		return newProject, err
@@ -47,7 +47,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 //  GET /api/project/{projectID}
 func (c Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
-	project := response.Project{}
+	var project response.Project
 	err := c.GetUnmarshal(path, nil, &project)
 	return project, err
 }
@@ -56,7 +56,7 @@ func (c Client) GetProject(projectID uint) (response.Project, error) {
 // request:
 //  GET /api/project
 func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects, error) {
-	projects := response.PaginatedProjects{}
+	var projects response.PaginatedProjects
 	q, err := query.Values(params)
 	if err != nil {
 		return projects, err
@@ -69,7 +69,7 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 // UpdateProject updates a project by ID by invoking the HTTP request:
 //  PUT /api/project/{projectID}
 func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
-	updatedProject := response.Project{}
+	var updatedProject response.Project
 	body, err := json.Marshal(project)
 	if err != nil {
 		return updatedProject, err
