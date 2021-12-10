@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/google/go-querystring/query"
@@ -41,11 +40,4 @@ func (c Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, e
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
 	err := c.GetDecoded(path, nil, &artifact)
 	return artifact, err
-}
-
-// CreateBuildArtifact is not implemented yet.
-// Should handle invoking the HTTP request:
-//  POST /api/build/{buildId}/artifact
-func (c Client) CreateBuildArtifact(buildID uint) error {
-	return errors.New("not implemented yet")
 }

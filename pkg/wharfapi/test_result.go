@@ -1,18 +1,10 @@
 package wharfapi
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/iver-wharf/wharf-api/pkg/model/response"
 )
-
-// CreateBuildTestResult is not implemented yet.
-// Should handle invoking the HTTP request:
-//  POST /api/build/{buildId}/test-result
-func (c Client) CreateBuildTestResult() error {
-	return errors.New("not implemented yet")
-}
 
 // GetBuildAllTestResultDetailList fetches all the test result
 // details for the specified build by invoking the HTTP request:

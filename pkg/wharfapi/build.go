@@ -2,7 +2,6 @@ package wharfapi
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -95,11 +94,4 @@ func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	logs := []response.Log{}
 	err := c.GetDecoded(path, nil, &logs)
 	return logs, err
-}
-
-// StreamBuildLog is not implemented yet.
-// Should handle invoking the HTTP request:
-//  GET /api/build/{buildId}/stream
-func (c Client) StreamBuildLog(buildID uint) error {
-	return errors.New("not implemented yet")
 }
