@@ -20,7 +20,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - BREAKING: Removed the `wharfapi.Provider.UploadURL` field, which was
   removed from the `Provider` struct in wharf-api v5.0.0. (#21)
 
-- Added dependency on `github.com/google/go-querystring` v1.1.0. (#29)
+- Added dependencies: (#29)
+
+  - `github.com/google/go-querystring` v1.1.0
+  - `github.com/iver-wharf/wharf-api` v5.0.0
 
 ## v1.4.0 (2021-09-07)
 
