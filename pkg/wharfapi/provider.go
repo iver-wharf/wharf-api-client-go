@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/google/go-querystring/query"
@@ -50,13 +49,8 @@ func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProvid
 //  PUT /api/provider/{providerID}
 func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
 	var updatedProvider response.Provider
-	body, err := json.Marshal(provider)
-	if err != nil {
-		return updatedProvider, err
-	}
-
 	path := fmt.Sprintf("/api/provider/%d", providerID)
-	err = c.PutJSONUnmarshal(path, nil, body, &updatedProvider)
+	err := c.PutJSONUnmarshal(path, nil, provider, &updatedProvider)
 	return updatedProvider, err
 }
 
@@ -64,12 +58,7 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 //  POST /api/provider
 func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
 	var newProvider response.Provider
-	body, err := json.Marshal(provider)
-	if err != nil {
-		return newProvider, err
-	}
-
 	path := "/api/provider"
-	err = c.PostJSONUnmarshal(path, nil, body, &newProvider)
+	err := c.PostJSONUnmarshal(path, nil, provider, &newProvider)
 	return newProvider, err
 }

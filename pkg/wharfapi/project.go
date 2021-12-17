@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/google/go-querystring/query"
@@ -30,13 +29,8 @@ type ProjectSearch struct {
 
 func (c Client) CreateProject(project request.Project) (response.Project, error) {
 	var newProject response.Project
-	body, err := json.Marshal(&project)
-	if err != nil {
-		return newProject, err
-	}
-
 	path := "/api/project"
-	err = c.PostJSONUnmarshal(path, nil, body, &newProject)
+	err := c.PostJSONUnmarshal(path, nil, project, &newProject)
 	return newProject, err
 }
 
@@ -70,12 +64,7 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 //  PUT /api/project/{projectID}
 func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
 	var updatedProject response.Project
-	body, err := json.Marshal(project)
-	if err != nil {
-		return updatedProject, err
-	}
-
 	path := fmt.Sprintf("/api/project/%d", projectID)
-	err = c.PutJSONUnmarshal(path, nil, body, &updatedProject)
+	err := c.PutJSONUnmarshal(path, nil, project, &updatedProject)
 	return updatedProject, err
 }

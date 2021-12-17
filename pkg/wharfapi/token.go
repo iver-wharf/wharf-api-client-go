@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/google/go-querystring/query"
@@ -46,13 +45,8 @@ func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, erro
 //  PUT /api/token
 func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.Token, error) {
 	var updatedToken response.Token
-	body, err := json.Marshal(token)
-	if err != nil {
-		return updatedToken, err
-	}
-
 	path := fmt.Sprintf("/api/token/%d", tokenID)
-	err = c.PutJSONUnmarshal(path, nil, body, &updatedToken)
+	err := c.PutJSONUnmarshal(path, nil, token, &updatedToken)
 	return updatedToken, err
 }
 
@@ -60,12 +54,7 @@ func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.T
 //  POST /api/token
 func (c Client) CreateToken(token request.Token) (response.Token, error) {
 	var newToken response.Token
-	body, err := json.Marshal(token)
-	if err != nil {
-		return newToken, err
-	}
-
 	path := "/api/token"
-	err = c.PostJSONUnmarshal(path, nil, body, &newToken)
+	err := c.PostJSONUnmarshal(path, nil, token, &newToken)
 	return newToken, err
 }

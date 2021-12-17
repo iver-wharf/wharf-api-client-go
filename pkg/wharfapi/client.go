@@ -57,16 +57,16 @@ func (c Client) Post(path string, q url.Values, body []byte) ([]byte, error) {
 	return doRequest(req)
 }
 
-func (c Client) PostJSON(path string, q url.Values, body interface{}) ([]byte, error) {
-	bodyBytes, err := json.Marshal(body)
+func (c Client) PostJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
+	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
 	}
 	return c.Post(path, q, bodyBytes)
 }
 
-func (c Client) PostJSONUnmarshal(path string, q url.Values, body interface{}, response interface{}) error {
-	responseBytes, err := c.PostJSON(path, q, body)
+func (c Client) PostJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
+	responseBytes, err := c.PostJSON(path, q, obj)
 	if err != nil {
 		return err
 	}
@@ -81,16 +81,16 @@ func (c Client) Put(path string, q url.Values, body []byte) ([]byte, error) {
 	return doRequest(req)
 }
 
-func (c Client) PutJSON(path string, q url.Values, body interface{}) ([]byte, error) {
-	bodyBytes, err := json.Marshal(body)
+func (c Client) PutJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
+	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
 	}
 	return c.Put(path, q, bodyBytes)
 }
 
-func (c Client) PutJSONUnmarshal(path string, q url.Values, body interface{}, response interface{}) error {
-	responseBytes, err := c.PutJSON(path, q, body)
+func (c Client) PutJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
+	responseBytes, err := c.PutJSON(path, q, obj)
 	if err != nil {
 		return err
 	}

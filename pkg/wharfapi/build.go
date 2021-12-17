@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -70,20 +69,15 @@ func (c Client) GetBuild(buildID uint) (response.Build, error) {
 func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
 	var updatedBuild response.Build
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
-	err := c.PutJSONUnmarshal(path, nil, &status, &updatedBuild)
+	err := c.PutJSONUnmarshal(path, nil, status, &updatedBuild)
 	return updatedBuild, err
 }
 
 // CreateBuildLog adds a new log to a build by invoking the HTTP request:
 //  POST /api/build/{buildId}/log
 func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
-	body, err := json.Marshal(buildLog)
-	if err != nil {
-		return err
-	}
-
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	_, err = c.Post(path, nil, body)
+	_, err := c.PostJSON(path, nil, buildLog)
 	return err
 }
 
@@ -106,7 +100,7 @@ func (c Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inpu
 	}
 
 	path := fmt.Sprintf("/api/project/%d/build", projectID)
-	err = c.PostJSONUnmarshal(path, q, &inputs, &newBuildRef)
+	err = c.PostJSONUnmarshal(path, q, inputs, &newBuildRef)
 	if err == nil {
 		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
 	}
