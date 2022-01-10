@@ -30,7 +30,7 @@ type ProjectSearch struct {
 func (c Client) CreateProject(project request.Project) (response.Project, error) {
 	var newProject response.Project
 	path := "/api/project"
-	err := c.PostJSONUnmarshal(path, nil, project, &newProject)
+	err := c.postJSONUnmarshal(path, nil, project, &newProject)
 	return newProject, err
 }
 
@@ -42,7 +42,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 func (c Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
 	var project response.Project
-	err := c.GetUnmarshal(path, nil, &project)
+	err := c.getUnmarshal(path, nil, &project)
 	return project, err
 }
 
@@ -56,7 +56,7 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 		return projects, err
 	}
 	path := "/api/project"
-	err = c.GetUnmarshal(path, q, &projects)
+	err = c.getUnmarshal(path, q, &projects)
 	return projects, err
 }
 
@@ -65,6 +65,6 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
 	var updatedProject response.Project
 	path := fmt.Sprintf("/api/project/%d", projectID)
-	err := c.PutJSONUnmarshal(path, nil, project, &updatedProject)
+	err := c.putJSONUnmarshal(path, nil, project, &updatedProject)
 	return updatedProject, err
 }

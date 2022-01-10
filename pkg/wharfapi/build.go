@@ -51,7 +51,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 		return builds, err
 	}
 	path := "/api/build"
-	err = c.GetUnmarshal(path, q, &builds)
+	err = c.getUnmarshal(path, q, &builds)
 	return builds, err
 }
 
@@ -60,7 +60,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 func (c Client) GetBuild(buildID uint) (response.Build, error) {
 	path := fmt.Sprintf("/api/build/%d", buildID)
 	var build response.Build
-	err := c.GetUnmarshal(path, nil, &build)
+	err := c.getUnmarshal(path, nil, &build)
 	return build, err
 }
 
@@ -69,7 +69,7 @@ func (c Client) GetBuild(buildID uint) (response.Build, error) {
 func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
 	var updatedBuild response.Build
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
-	err := c.PutJSONUnmarshal(path, nil, status, &updatedBuild)
+	err := c.putJSONUnmarshal(path, nil, status, &updatedBuild)
 	return updatedBuild, err
 }
 
@@ -77,7 +77,7 @@ func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate
 //  POST /api/build/{buildId}/log
 func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	_, err := c.PostJSON(path, nil, buildLog)
+	_, err := c.postJSON(path, nil, buildLog)
 	return err
 }
 
@@ -86,7 +86,7 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
 	var logs []response.Log
-	err := c.GetUnmarshal(path, nil, &logs)
+	err := c.getUnmarshal(path, nil, &logs)
 	return logs, err
 }
 
@@ -100,7 +100,7 @@ func (c Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inpu
 	}
 
 	path := fmt.Sprintf("/api/project/%d/build", projectID)
-	err = c.PostJSONUnmarshal(path, q, inputs, &newBuildRef)
+	err = c.postJSONUnmarshal(path, q, inputs, &newBuildRef)
 	if err == nil {
 		log.Debug().WithString("buildRef", newBuildRef.BuildReference).Message("Started build.")
 	}

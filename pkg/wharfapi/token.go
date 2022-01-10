@@ -21,7 +21,7 @@ type TokenSearch struct {
 func (c Client) GetToken(tokenID uint) (response.Token, error) {
 	var token response.Token
 	path := fmt.Sprintf("/api/token/%d", tokenID)
-	err := c.GetUnmarshal(path, nil, &token)
+	err := c.getUnmarshal(path, nil, &token)
 	return token, err
 }
 
@@ -37,7 +37,7 @@ func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, erro
 	}
 
 	path := "/api/token"
-	err = c.GetUnmarshal(path, q, &tokens)
+	err = c.getUnmarshal(path, q, &tokens)
 	return tokens, err
 }
 
@@ -46,7 +46,7 @@ func (c Client) GetTokenList(params TokenSearch) (response.PaginatedTokens, erro
 func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.Token, error) {
 	var updatedToken response.Token
 	path := fmt.Sprintf("/api/token/%d", tokenID)
-	err := c.PutJSONUnmarshal(path, nil, token, &updatedToken)
+	err := c.putJSONUnmarshal(path, nil, token, &updatedToken)
 	return updatedToken, err
 }
 
@@ -55,6 +55,6 @@ func (c Client) UpdateToken(tokenID uint, token request.TokenUpdate) (response.T
 func (c Client) CreateToken(token request.Token) (response.Token, error) {
 	var newToken response.Token
 	path := "/api/token"
-	err := c.PostJSONUnmarshal(path, nil, token, &newToken)
+	err := c.postJSONUnmarshal(path, nil, token, &newToken)
 	return newToken, err
 }

@@ -33,70 +33,70 @@ type Client struct {
 // future release.
 type WharfClient Client
 
-func (c Client) Get(path string, q url.Values) ([]byte, error) {
-	req, err := c.NewRequest(http.MethodGet, path, q, nil)
+func (c Client) get(path string, q url.Values) ([]byte, error) {
+	req, err := c.newRequest(http.MethodGet, path, q, nil)
 	if err != nil {
 		return nil, err
 	}
 	return doRequest(req)
 }
 
-func (c Client) GetUnmarshal(path string, q url.Values, response interface{}) error {
-	bytes, err := c.Get(path, q)
+func (c Client) getUnmarshal(path string, q url.Values, response interface{}) error {
+	bytes, err := c.get(path, q)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(bytes, response)
 }
 
-func (c Client) Post(path string, q url.Values, body []byte) ([]byte, error) {
-	req, err := c.NewRequest(http.MethodPost, path, q, body)
+func (c Client) post(path string, q url.Values, body []byte) ([]byte, error) {
+	req, err := c.newRequest(http.MethodPost, path, q, body)
 	if err != nil {
 		return nil, err
 	}
 	return doRequest(req)
 }
 
-func (c Client) PostJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
+func (c Client) postJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
 	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
 	}
-	return c.Post(path, q, bodyBytes)
+	return c.post(path, q, bodyBytes)
 }
 
-func (c Client) PostJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
-	responseBytes, err := c.PostJSON(path, q, obj)
+func (c Client) postJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
+	responseBytes, err := c.postJSON(path, q, obj)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(responseBytes, response)
 }
 
-func (c Client) Put(path string, q url.Values, body []byte) ([]byte, error) {
-	req, err := c.NewRequest(http.MethodPut, path, q, body)
+func (c Client) put(path string, q url.Values, body []byte) ([]byte, error) {
+	req, err := c.newRequest(http.MethodPut, path, q, body)
 	if err != nil {
 		return nil, err
 	}
 	return doRequest(req)
 }
 
-func (c Client) PutJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
+func (c Client) putJSON(path string, q url.Values, obj interface{}) ([]byte, error) {
 	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
 	}
-	return c.Put(path, q, bodyBytes)
+	return c.put(path, q, bodyBytes)
 }
 
-func (c Client) PutJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
-	responseBytes, err := c.PutJSON(path, q, obj)
+func (c Client) putJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
+	responseBytes, err := c.putJSON(path, q, obj)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(responseBytes, response)
 }
 
-func (c Client) NewRequest(method, path string, q url.Values, body []byte) (*http.Request, error) {
+func (c Client) newRequest(method, path string, q url.Values, body []byte) (*http.Request, error) {
 	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
 }
