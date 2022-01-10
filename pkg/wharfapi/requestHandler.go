@@ -59,10 +59,10 @@ func doRequest(req *http.Request) ([]byte, error) {
 			WithString("method", req.Method).
 			WithString("url", redactedURL)
 	}
-	withRequestMeta(log.Debug()).Message("")
+	log.Debug().WithFunc(withRequestMeta).Message("")
 
 	if err != nil {
-		withRequestMeta(log.Error()).
+		log.Error().WithFunc(withRequestMeta).
 			WithError(err).
 			Message("Failed sending HTTP request.")
 		return nil, err
@@ -71,7 +71,7 @@ func doRequest(req *http.Request) ([]byte, error) {
 
 	if isNonSuccessful(response.StatusCode) {
 		if response.StatusCode == http.StatusUnauthorized {
-			withRequestMeta(log.Error()).
+			log.Error().WithFunc(withRequestMeta).
 				WithInt("status", response.StatusCode).
 				Message("Unauthorized.")
 			realm := response.Header.Get("WWW-Authenticate")
@@ -86,7 +86,7 @@ func doRequest(req *http.Request) ([]byte, error) {
 			return nil, prob
 		}
 
-		withRequestMeta(log.Warn()).
+		log.Warn().WithFunc(withRequestMeta).
 			WithInt("status", response.StatusCode).
 			WithString("Content-Type", response.Header.Get("Content-Type")).
 			Messagef("Non-2xx should have responded with a Content-Type of %q.", problem.HTTPContentType)
