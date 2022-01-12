@@ -14,7 +14,7 @@ into the database when importing from GitLab, GitHub, or Azure DevOps.
 ## Usage
 
 ```console
-$ go get github.com/iver-wharf/wharf-api-client-go/v2
+$ go get github.com/iver-wharf/wharf-api-client-go/v2/pkg/wharfapi
 ```
 
 ```go
