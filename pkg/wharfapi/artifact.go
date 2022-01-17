@@ -7,6 +7,9 @@ import (
 	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
+// ArtifactSearch is used when getting artifacts without using an artifact ID
+// through the HTTP request:
+//  GET /api/build/{buildId}/artifact
 type ArtifactSearch struct {
 	BuildID       *uint    `url:"buildId,omitempty"`
 	Limit         *int     `url:"limit,omitempty"`

@@ -8,6 +8,9 @@ import (
 	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
+// TokenSearch is used when getting tokens without using a token ID
+// through the HTTP request:
+//  GET /api/token
 type TokenSearch struct {
 	Limit         *int     `url:"limit,omitempty"`
 	Offset        *int     `url:"offset,omitempty"`

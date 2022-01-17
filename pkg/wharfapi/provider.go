@@ -8,6 +8,9 @@ import (
 	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
+// ProviderSearch is used when getting providers without using a provider ID
+// through the HTTP request:
+//  GET /api/provider
 type ProviderSearch struct {
 	Limit     *int     `url:"limit,omitempty"`
 	Offset    *int     `url:"offset,omitempty"`

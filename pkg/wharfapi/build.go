@@ -9,6 +9,9 @@ import (
 	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
+// BuildSearch is used when getting builds without using a build ID through the
+// HTTP request:
+//  GET /api/build
 type BuildSearch struct {
 	Limit     *int     `url:"limit,omitempty"`
 	Offset    *int     `url:"offset,omitempty"`
@@ -42,7 +45,8 @@ type ProjectStartBuild struct {
 	Environment string `url:"environment,omitempty"`
 }
 
-// GetBuildList gets all builds by invoking the HTTP request:
+// GetBuildList filters builds based on the parameters by invoking the HTTP
+// request:
 //  GET /api/build
 func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
 	var builds response.PaginatedBuilds

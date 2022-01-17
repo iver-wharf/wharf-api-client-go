@@ -8,8 +8,9 @@ import (
 	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
-// type Project response.Project
-// type ProjectUpdate request.ProjectUpdate
+// ProjectSearch is used when getting projects without using a project ID through
+// the HTTP request:
+//  GET /api/project
 type ProjectSearch struct {
 	OrderBy          []string `url:"orderby,omitempty"`
 	Limit            *int     `url:"limit,omitempty"`
@@ -27,6 +28,9 @@ type ProjectSearch struct {
 	Match            *string  `url:"match,omitempty"`
 }
 
+// CreateProject adds a new project to the database by invoking the
+// HTTP request:
+//  POST /api/project
 func (c Client) CreateProject(project request.Project) (response.Project, error) {
 	var newProject response.Project
 	path := "/api/project"
@@ -34,10 +38,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 	return newProject, err
 }
 
-// // ProjectRunResponse contains metadata about the newly started build.
-// type ProjectRunResponse = response.BuildReferenceWrapper
-
-// GetProjectByID fetches a project by ID by invoking the HTTP request:
+// GetProject fetches a project by ID by invoking the HTTP request:
 //  GET /api/project/{projectID}
 func (c Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
