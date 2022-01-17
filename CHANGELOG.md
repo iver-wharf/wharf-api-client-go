@@ -12,6 +12,17 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## Compatibility with wharf-api
+
+| wharf-api-client-go | wharf-api |
+| :---: | :---: |
+| v1 | v0, v1, v2, v3, v4, *and* v5<sup>1</sup> |
+| v2 | v5, *and beyond* |
+
+<sup>1</sup>: Partial support for `wharf-api/v5`. Most behavior differs from
+what `wharf-api-client-go/v1` documentation and comments suggest. **Strongly
+discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
+
 ## v2.0.0 (WIP)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
