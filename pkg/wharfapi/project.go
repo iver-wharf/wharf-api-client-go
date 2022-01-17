@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/google/go-querystring/query"
-	"github.com/iver-wharf/wharf-api/pkg/model/request"
-	"github.com/iver-wharf/wharf-api/pkg/model/response"
+	"github.com/iver-wharf/wharf-api/v5/pkg/model/request"
+	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
 // type Project response.Project

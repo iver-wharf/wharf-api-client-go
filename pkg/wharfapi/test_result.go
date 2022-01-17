@@ -3,7 +3,7 @@ package wharfapi
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-api/pkg/model/response"
+	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
 )
 
 // GetBuildAllTestResultDetailList fetches all the test result
