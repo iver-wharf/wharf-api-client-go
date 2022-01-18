@@ -30,7 +30,7 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
 
 - BREAKING: Removed duplications of `github.com/iver-wharf/wharf-api` structs,
   now importing from `wharf-api` directly instead. (#29)
-  
+
   Non-exhaustive list of examples:
   - `wharfapi.Provider` -> `Provider` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
   - `wharfapi.Project` -> `Project` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
@@ -47,8 +47,7 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
   - `github.com/google/go-querystring` v1.1.0
   - `github.com/iver-wharf/wharf-api` v5.0.0
 
-- Removed the `wharfapi.Provider.UploadURL` field, which will be removed from
-  the `Provider` struct in `github.com/iver-wharf/wharf-api` in v5.0.0. (#21)
+- Changed Go version from 1.13 to 1.16. (#29)
 
 ## v1.4.0 (2021-09-07)
 
