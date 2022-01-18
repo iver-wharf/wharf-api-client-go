@@ -47,7 +47,7 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
   - `github.com/google/go-querystring` v1.1.0
   - `github.com/iver-wharf/wharf-api` v5.0.0
 
-- Changed Go version from 1.13 to 1.16. (#29)
+- Changed module Go version from 1.13 to 1.16. (#29)
 
 ## v1.4.0 (2021-09-07)
 
