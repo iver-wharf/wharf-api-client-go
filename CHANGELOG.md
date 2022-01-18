@@ -30,6 +30,7 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
 
 - BREAKING: Removed duplications of `github.com/iver-wharf/wharf-api` structs,
   now importing from `wharf-api` directly instead. (#29)
+  
   Non-exhaustive list of examples:
   - `wharfapi.Provider` -> `Provider` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
   - `wharfapi.Project` -> `Project` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
