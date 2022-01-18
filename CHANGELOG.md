@@ -28,10 +28,13 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
   to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
 
-- BREAKING: Removed the `wharfapi.Provider.UploadURL` field, which was
-  removed from the `Provider` struct in wharf-api v5.0.0. (#21)
+- BREAKING: Removed duplications of `github.com/iver-wharf/wharf-api` structs, now importing
+  from `wharf-api` directly instead. (#29)
+  Non-exhaustive list of examples:
+  - `wharfapi.Provider` -> `Provider` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
+  - `wharfapi.Project` -> `Project` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
 
-- BREAKING: Removed support for wharf-api v4 and below. (#29)
+- BREAKING: Removed support for wharf-api v4.2.0 and below. (#29)
 
 - Added support for wharf-api v5. (#29)
 
