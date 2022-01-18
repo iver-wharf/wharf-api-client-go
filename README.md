@@ -11,6 +11,13 @@ serialize/deserialize each message back and forth.
 This project is for example used inside the providers to create projects
 into the database when importing from GitLab, GitHub, or Azure DevOps.
 
+## Compatibility
+
+| wharf-api-client-go | wharf-api |
+| :---: | :---: |
+| v1 | v0, v1, v2, v3, v4, *and* v5 |
+| v2 | v5, *and beyond* |
+
 ## Usage
 
 ```console

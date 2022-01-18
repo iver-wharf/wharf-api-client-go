@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/go-querystring/query"
-	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
 
 // ArtifactSearch is used when getting artifacts without using an artifact ID

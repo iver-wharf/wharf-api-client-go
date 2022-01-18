@@ -12,28 +12,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## Compatibility with wharf-api
-
-| wharf-api-client-go | wharf-api |
-| :---: | :---: |
-| v1 | v0, v1, v2, v3, v4, *and* v5<sup>1</sup> |
-| v2 | v5, *and beyond* |
-
-<sup>1</sup>: Partial support for `wharf-api/v5`. Most behavior differs from
-what `wharf-api-client-go/v1` documentation and comments suggest. **Strongly
-discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
-
 ## v2.0.0 (WIP)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
   to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
 
-- BREAKING: Removed duplications of `github.com/iver-wharf/wharf-api` structs,
-  now importing from `wharf-api` directly instead. (#29)
-
-  Non-exhaustive list of examples:
-  - `wharfapi.Provider` -> `Provider` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
-  - `wharfapi.Project` -> `Project` in `github.com/iver-wharf/wharf-api/v5/pkg/response`
+- BREAKING: Changed minimum version of Go from 1.13 to 1.16. (#29)
 
 - BREAKING: Removed support for wharf-api v4.2.0 and below. (#29)
 
@@ -46,8 +30,6 @@ discouraged to use** `wharf-api-client-go/v1` **with** `wharf-api/v5`**!**
 
   - `github.com/google/go-querystring` v1.1.0
   - `github.com/iver-wharf/wharf-api` v5.0.0
-
-- Changed module Go version from 1.13 to 1.16. (#29)
 
 ## v1.4.0 (2021-09-07)
 

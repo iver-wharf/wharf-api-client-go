@@ -3,8 +3,8 @@ package wharfapi
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-api/v5/pkg/model/request"
-	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
 
 // CreateProjectBranch adds a branch to the project with the matching

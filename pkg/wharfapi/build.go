@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/google/go-querystring/query"
-	"github.com/iver-wharf/wharf-api/v5/pkg/model/request"
-	"github.com/iver-wharf/wharf-api/v5/pkg/model/response"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
 
 // BuildSearch is used when getting builds without using a build ID through the
