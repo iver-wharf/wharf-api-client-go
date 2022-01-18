@@ -15,8 +15,10 @@ into the database when importing from GitLab, GitHub, or Azure DevOps.
 
 | wharf-api-client-go | wharf-api |
 | :---: | :---: |
-| v1 | v0, v1, v2, v3, v4, *and* v5 |
+| v1 | v0, v1, v2, v3, v4, *and* v5<sup>1</sup> |
 | v2 | v5, *and beyond* |
+
+<sup>1</sup>: The `PUT` endpoints `/api/project`, `/api/token`, and `/api/provider` were removed in `wharf-api v5.0.0`.
 
 ## Usage
 
