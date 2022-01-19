@@ -49,7 +49,7 @@ func newRequestFromURL(method, authHeader string, u *url.URL, body []byte) (*htt
 	return req, nil
 }
 
-func doRequest(req *http.Request) ([]byte, error) {
+func doRequest(req *http.Request) (*io.ReadCloser, error) {
 	client := &http.Client{}
 	response, err := client.Do(req)
 
@@ -93,12 +93,7 @@ func doRequest(req *http.Request) ([]byte, error) {
 		return nil, fmt.Errorf("unexpected status code returned: %s", response.Status)
 	}
 
-	bytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return bytes, nil
+	return &response.Body, nil
 }
 
 func redactTokenInJSON(src string) string {
