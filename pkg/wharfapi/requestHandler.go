@@ -67,9 +67,9 @@ func doRequest(req *http.Request) (*io.ReadCloser, error) {
 			Message("Failed sending HTTP request.")
 		return nil, err
 	}
-	defer response.Body.Close()
 
 	if isNonSuccessful(response.StatusCode) {
+		defer response.Body.Close()
 		if response.StatusCode == http.StatusUnauthorized {
 			log.Error().WithFunc(withRequestMeta).
 				WithInt("status", response.StatusCode).
