@@ -81,8 +81,11 @@ func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate
 //  POST /api/build/{buildId}/log
 func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
-	_, err := c.postJSON(path, nil, buildLog)
-	return err
+	ioBody, err := c.postJSON(path, nil, buildLog)
+	if err != nil {
+		return err
+	}
+	return (*ioBody).Close()
 }
 
 // GetBuildLogList gets the logs for a build by invoking the HTTP request:
