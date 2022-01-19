@@ -47,6 +47,7 @@ func (c Client) getUnmarshal(path string, q url.Values, response interface{}) er
 	if err != nil {
 		return err
 	}
+	defer (*ioBody).Close()
 	return json.NewDecoder(*ioBody).Decode(response)
 }
 
@@ -71,6 +72,7 @@ func (c Client) postJSONUnmarshal(path string, q url.Values, obj interface{}, re
 	if err != nil {
 		return err
 	}
+	defer (*ioBody).Close()
 	return json.NewDecoder(*ioBody).Decode(response)
 }
 
@@ -95,6 +97,7 @@ func (c Client) putJSONUnmarshal(path string, q url.Values, obj interface{}, res
 	if err != nil {
 		return err
 	}
+	defer (*ioBody).Close()
 	return json.NewDecoder(*ioBody).Decode(response)
 }
 
