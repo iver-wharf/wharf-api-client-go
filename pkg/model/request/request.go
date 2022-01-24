@@ -2,7 +2,7 @@
 // and Swaggo documentation for the HTTP request models, with Gin- and
 // Swaggo-specific Go tags.
 //
-// Copied from github.com/iver-wharf/wharf-api/pkg/model/request
+// Copied from https://github.com/iver-wharf/wharf-api/blob/v5.0.0/pkg/model/request/request.go
 package request
 
 import (

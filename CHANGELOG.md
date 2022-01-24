@@ -26,10 +26,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed version of `github.com/iver-wharf/wharf-core` from v1.2.0 to v1.3.0.
   (#29)
 
-- Added dependencies: (#29)
-
-  - `github.com/google/go-querystring` v1.1.0
-  - `github.com/iver-wharf/wharf-api` v5.0.0
+- Added dependency `github.com/google/go-querystring` v1.1.0. (#29)
 
 ## v1.4.0 (2021-09-07)
 

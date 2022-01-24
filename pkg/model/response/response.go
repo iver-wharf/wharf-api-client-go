@@ -1,7 +1,7 @@
 // Package response contains plain old Go types returned by wharf-web in the
 // HTTP responses, with Swaggo-specific Go tags.
 //
-// Copied from github.com/iver-wharf/wharf-api/pkg/model/response
+// Copied from https://github.com/iver-wharf/wharf-api/blob/v5.0.0/pkg/model/response/response.go
 package response
 
 import (
