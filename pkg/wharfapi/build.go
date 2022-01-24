@@ -85,7 +85,7 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 	if err != nil {
 		return err
 	}
-	return (*ioBody).Close()
+	return ioBody.Close()
 }
 
 // GetBuildLogList gets the logs for a build by invoking the HTTP request:

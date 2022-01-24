@@ -34,7 +34,7 @@ type Client struct {
 // future release.
 type WharfClient Client
 
-func (c Client) get(path string, q url.Values) (*io.ReadCloser, error) {
+func (c Client) get(path string, q url.Values) (io.ReadCloser, error) {
 	req, err := c.newRequest(http.MethodGet, path, q, nil)
 	if err != nil {
 		return nil, err
@@ -47,14 +47,14 @@ func (c Client) getUnmarshal(path string, q url.Values, response interface{}) er
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(*ioBody).Decode(response)
+	err = json.NewDecoder(ioBody).Decode(response)
 	if err != nil {
 		return err
 	}
-	return (*ioBody).Close()
+	return ioBody.Close()
 }
 
-func (c Client) post(path string, q url.Values, body []byte) (*io.ReadCloser, error) {
+func (c Client) post(path string, q url.Values, body []byte) (io.ReadCloser, error) {
 	req, err := c.newRequest(http.MethodPost, path, q, body)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (c Client) post(path string, q url.Values, body []byte) (*io.ReadCloser, er
 	return doRequest(req)
 }
 
-func (c Client) postJSON(path string, q url.Values, obj interface{}) (*io.ReadCloser, error) {
+func (c Client) postJSON(path string, q url.Values, obj interface{}) (io.ReadCloser, error) {
 	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
@@ -75,14 +75,14 @@ func (c Client) postJSONUnmarshal(path string, q url.Values, obj interface{}, re
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(*ioBody).Decode(response)
+	err = json.NewDecoder(ioBody).Decode(response)
 	if err != nil {
 		return err
 	}
-	return (*ioBody).Close()
+	return ioBody.Close()
 }
 
-func (c Client) put(path string, q url.Values, body []byte) (*io.ReadCloser, error) {
+func (c Client) put(path string, q url.Values, body []byte) (io.ReadCloser, error) {
 	req, err := c.newRequest(http.MethodPut, path, q, body)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (c Client) put(path string, q url.Values, body []byte) (*io.ReadCloser, err
 	return doRequest(req)
 }
 
-func (c Client) putJSON(path string, q url.Values, obj interface{}) (*io.ReadCloser, error) {
+func (c Client) putJSON(path string, q url.Values, obj interface{}) (io.ReadCloser, error) {
 	bodyBytes, err := json.Marshal(&obj)
 	if err != nil {
 		return nil, err
@@ -103,11 +103,11 @@ func (c Client) putJSONUnmarshal(path string, q url.Values, obj interface{}, res
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(*ioBody).Decode(response)
+	err = json.NewDecoder(ioBody).Decode(response)
 	if err != nil {
 		return err
 	}
-	return (*ioBody).Close()
+	return ioBody.Close()
 }
 
 func (c Client) newRequest(method, path string, q url.Values, body []byte) (*http.Request, error) {
