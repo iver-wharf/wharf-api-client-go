@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.0.0 (WIP)
+## v2.0.0 (2022-01-24)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
   to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
