@@ -17,8 +17,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
   to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
 
-- Removed the `wharfapi.Provider.UploadURL` field, which will be removed from
-  the `Provider` struct in `github.com/iver-wharf/wharf-api` in v5.0.0. (#21)
+- BREAKING: Changed minimum version of Go from 1.13 to 1.16. (#29)
+
+- BREAKING: Removed support for wharf-api v4.2.0 and below. (#29)
+
+- Added support for wharf-api v5. (#29)
+
+- Changed version of `github.com/iver-wharf/wharf-core` from v1.2.0 to v1.3.0.
+  (#29)
+
+- Added dependency `github.com/google/go-querystring` v1.1.0. (#29)
 
 ## v1.4.0 (2021-09-07)
 
@@ -36,7 +44,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   (#12, #13, #16)
 
 - Changed all logging via `fmt.Print` and sirupsen/logrus to instead use the new
- `github.com/iver-wharf/wharf-core/pkg/logger`. (#13)
+  `github.com/iver-wharf/wharf-core/pkg/logger`. (#13)
 
 - Changed to use `problem.Response` from `wharf-core` instead of the
   `wharfapi.Problem` that was added in v1.3.0/#4. (#12, #14)

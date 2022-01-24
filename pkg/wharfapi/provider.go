@@ -1,155 +1,67 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
+
+	"github.com/google/go-querystring/query"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
 
-// Provider holds metadata about a provider registered in Wharf.
-type Provider struct {
-	ProviderID uint   `json:"providerId"`
-	Name       string `json:"name"`
-	URL        string `json:"url"`
-	TokenID    uint   `json:"tokenId"`
+// ProviderSearch is used when getting providers without using a provider ID
+// through the HTTP request:
+//  GET /api/provider
+type ProviderSearch struct {
+	Limit     *int     `url:"limit,omitempty"`
+	Offset    *int     `url:"offset,omitempty"`
+	OrderBy   []string `url:"orderby,omitempty"`
+	Name      *string  `url:"name,omitempty"`
+	URL       *string  `url:"url,omitempty"`
+	NameMatch *string  `url:"nameMatch,omitempty"`
+	URLMatch  *string  `url:"urlMatch,omitempty"`
+	Match     *string  `url:"match,omitempty"`
 }
 
-// GetProviderByID fetches a provider by ID by invoking the HTTP request:
-// 	GET /api/provider/{providerID}
-func (c Client) GetProviderByID(providerID uint) (Provider, error) {
-	newProvider := Provider{}
-
-	apiURL := fmt.Sprintf("%s/api/provider/%v", c.APIURL, providerID)
-	ioBody, err := doRequest("GET | PROVIDER |", http.MethodGet, apiURL, []byte{}, c.AuthHeader)
-	if err != nil {
-		return newProvider, err
-	}
-
-	defer (*ioBody).Close()
-
-	err = json.NewDecoder(*ioBody).Decode(&newProvider)
-	if err != nil {
-		return newProvider, err
-	}
-	return newProvider, nil
+// GetProvider fetches a provider by ID by invoking the HTTP request:
+//  GET /api/provider/{providerID}
+func (c Client) GetProvider(providerID uint) (response.Provider, error) {
+	var provider response.Provider
+	path := fmt.Sprintf("/api/provider/%d", providerID)
+	err := c.getUnmarshal(path, nil, &provider)
+	return provider, err
 }
 
-// GetProvider tries to find a provider based on its name, URL, etc. by invoking
-// the HTTP request:
-// 	POST /api/providers/search
-func (c Client) GetProvider(providerName, urlStr string, tokenID uint) (Provider, error) {
-	newProvider := Provider{}
+// GetProviderList filters providers based on the parameters by invoking the HTTP
+// request:
+//  GET /api/provider
+func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
+	var providers response.PaginatedProviders
 
-	path := "/api/providers/search"
-	data := url.Values{}
-	data.Set("Name", providerName)
-	data.Add("URL", urlStr)
-
-	if tokenID > 0 {
-		data.Add("TokenID", fmt.Sprint(tokenID))
-	}
-
-	u, _ := url.ParseRequestURI(c.APIURL)
-	u.Path = path
-	u.RawQuery = data.Encode()
-	apiURL := fmt.Sprintf("%v", u)
-
-	ioBody, err := doRequest("GET | PROVIDER |", http.MethodPost, apiURL, []byte{}, c.AuthHeader)
+	q, err := query.Values(params)
 	if err != nil {
-		return newProvider, err
+		return providers, err
 	}
 
-	defer (*ioBody).Close()
-
-	var providers []Provider
-	err = json.NewDecoder(*ioBody).Decode(&providers)
-	if err != nil {
-		return newProvider, err
-	}
-
-	if len(providers) == 0 {
-		return newProvider, nil
-	}
-
-	return providers[0], nil
+	path := "/api/provider"
+	err = c.getUnmarshal(path, q, &providers)
+	return providers, err
 }
 
-// SearchProvider tries to match the given provider on the provider name, URL,
-// upload URL, and token ID, by invoking the HTTP request:
-// 	POST /api/providers/search
-//
-// The token ID is not queried if the argument's tokenID field is set to zero.
-func (c Client) SearchProvider(provider Provider) ([]Provider, error) {
-	body, err := json.Marshal(provider)
-	if err != nil {
-		return nil, err
-	}
-
-	url := fmt.Sprintf("%s/api/providers/search", c.APIURL)
-	ioBody, err := doRequest("SEARCH | PROVIDER |", http.MethodPost, url, body, c.AuthHeader)
-	if err != nil {
-		return nil, err
-	}
-
-	defer (*ioBody).Close()
-
-	var foundProviders []Provider
-	err = json.NewDecoder(*ioBody).Decode(&foundProviders)
-	if err != nil {
-		return nil, err
-	}
-
-	return foundProviders, nil
+// UpdateProvider updates the provider with the specified ID by invoking the
+// HTTP request:
+//  PUT /api/provider/{providerID}
+func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
+	var updatedProvider response.Provider
+	path := fmt.Sprintf("/api/provider/%d", providerID)
+	err := c.putJSONUnmarshal(path, nil, provider, &updatedProvider)
+	return updatedProvider, err
 }
 
-// PutProvider tries to match an existing provider by ID or combination of name,
-// URL, etc. and updates it, or adds a new a provider if none matched,
-// by invoking the HTTP request:
-// 	PUT /api/provider
-func (c Client) PutProvider(provider Provider) (Provider, error) {
-	body, err := json.Marshal(provider)
-	if err != nil {
-		return Provider{}, err
-	}
-
-	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
-	ioBody, err := doRequest("PUT | PROVIDER |", http.MethodPut, apiURL, body, c.AuthHeader)
-	if err != nil {
-		return Provider{}, err
-	}
-
-	defer (*ioBody).Close()
-
-	var newProvider Provider
-	if err := json.NewDecoder(*ioBody).Decode(&newProvider); err != nil {
-		return Provider{}, err
-	}
-
-	return newProvider, nil
-}
-
-// PostProvider adds a new a provider by invoking the HTTP request:
-// 	POST /api/provider
-func (c Client) PostProvider(provider Provider) (Provider, error) {
-	newProvider := Provider{}
-	body, err := json.Marshal(provider)
-	if err != nil {
-		return newProvider, err
-	}
-
-	apiURL := fmt.Sprintf("%s/api/provider", c.APIURL)
-	ioBody, err := doRequest("POST | PROVIDER |", http.MethodPost, apiURL, body, c.AuthHeader)
-	if err != nil {
-		return newProvider, err
-	}
-
-	defer (*ioBody).Close()
-
-	err = json.NewDecoder(*ioBody).Decode(&newProvider)
-	if err != nil {
-		return newProvider, err
-	}
-
-	return newProvider, nil
+// CreateProvider creates a new provider by invoking the HTTP request:
+//  POST /api/provider
+func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
+	var newProvider response.Provider
+	path := "/api/provider"
+	err := c.postJSONUnmarshal(path, nil, provider, &newProvider)
+	return newProvider, err
 }

@@ -1,138 +1,71 @@
 package wharfapi
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/google/go-querystring/query"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
+	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
 
-// Project is a project inside Wharf. For most providers this represents info
-// about a Git repository that has been registered in Wharf.
-type Project struct {
-	ProjectID       uint   `json:"projectId"`
-	Name            string `json:"name"`
-	GroupName       string `json:"groupName"`
-	BuildDefinition string `json:"buildDefinition"`
-	TokenID         uint   `json:"tokenId"`
-	Description     string `json:"description"`
-	AvatarURL       string `json:"avatarUrl"`
-	ProviderID      uint   `json:"providerId"`
-	GitURL          string `json:"gitUrl"`
+// ProjectSearch is used when getting projects without using a project ID through
+// the HTTP request:
+//  GET /api/project
+type ProjectSearch struct {
+	OrderBy          []string `url:"orderby,omitempty"`
+	Limit            *int     `url:"limit,omitempty"`
+	Offset           *int     `url:"offset,omitempty"`
+	Name             *string  `url:"name,omitempty"`
+	GroupName        *string  `url:"groupName,omitempty"`
+	Description      *string  `url:"description,omitempty"`
+	TokenID          *uint    `url:"tokenId,omitempty"`
+	ProviderID       *uint    `url:"providerId,omitempty"`
+	GitURL           *string  `url:"gitUrl,omitempty"`
+	NameMatch        *string  `url:"nameMatch,omitempty"`
+	GroupNameMatch   *string  `url:"groupNameMatch,omitempty"`
+	DescriptionMatch *string  `url:"descriptionMatch,omitempty"`
+	GitURLMatch      *string  `url:"gitUrlMatch,omitempty"`
+	Match            *string  `url:"match,omitempty"`
 }
 
-// ProjectRun is a range of options you start a build with. The ProjectID and
-// Stage fields are required when starting a build.
-type ProjectRun struct {
-	ProjectID   uint   `json:"projectId"`
-	Stage       string `json:"stage"`
-	Branch      string `json:"branch"`
-	Environment string `json:"environment"`
+// CreateProject adds a new project to the database by invoking the
+// HTTP request:
+//  POST /api/project
+func (c Client) CreateProject(project request.Project) (response.Project, error) {
+	var newProject response.Project
+	path := "/api/project"
+	err := c.postJSONUnmarshal(path, nil, project, &newProject)
+	return newProject, err
 }
 
-// ProjectRunResponse contains metadata about the newly started build.
-type ProjectRunResponse struct {
-	BuildID uint `json:"buildRef"`
+// GetProject fetches a project by ID by invoking the HTTP request:
+//  GET /api/project/{projectID}
+func (c Client) GetProject(projectID uint) (response.Project, error) {
+	path := fmt.Sprintf("/api/project/%v", projectID)
+	var project response.Project
+	err := c.getUnmarshal(path, nil, &project)
+	return project, err
 }
 
-// GetProjectByID fetches a project by ID by invoking the HTTP request:
-// 	GET /api/project/{projectID}
-func (c Client) GetProjectByID(projectID uint) (Project, error) {
-	url := fmt.Sprintf("%s/api/project/%v", c.APIURL, projectID)
-	ioBody, err := doRequest("GET | PROJECT |", http.MethodGet, url, []byte{}, c.AuthHeader)
+// GetProjectList filters projects based on the parameters by invoking the HTTP
+// request:
+//  GET /api/project
+func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects, error) {
+	var projects response.PaginatedProjects
+	q, err := query.Values(params)
 	if err != nil {
-		return Project{}, err
+		return projects, err
 	}
-
-	defer (*ioBody).Close()
-
-	newProject := Project{}
-	err = json.NewDecoder(*ioBody).Decode(&newProject)
-	if err != nil {
-		return Project{}, err
-	}
-	return newProject, nil
+	path := "/api/project"
+	err = c.getUnmarshal(path, q, &projects)
+	return projects, err
 }
 
-// SearchProject tries to match the given project on all non-zero fields by
-// invoking the HTTP request:
-// 	POST /api/projects/search
-func (c Client) SearchProject(project Project) ([]Project, error) {
-	body, err := json.Marshal(project)
-	if err != nil {
-		return nil, err
-	}
-
-	url := fmt.Sprintf("%s/api/projects/search", c.APIURL)
-	ioBody, err := doRequest("SEARCH | PROJECT |", http.MethodPost, url, body, c.AuthHeader)
-	if err != nil {
-		return nil, err
-	}
-
-	defer (*ioBody).Close()
-
-	var foundProjects []Project
-	err = json.NewDecoder(*ioBody).Decode(&foundProjects)
-	if err != nil {
-		return nil, err
-	}
-
-	return foundProjects, nil
-}
-
-// PutProject tries to match an existing project by ID or name+group and updates
-// it, or adds a new a project if none matched, by invoking the HTTP request:
-// 	PUT /api/project
-func (c Client) PutProject(project Project) (Project, error) {
-	body, err := json.Marshal(project)
-	if err != nil {
-		return Project{}, err
-	}
-
-	url := fmt.Sprintf("%s/api/project", c.APIURL)
-	ioBody, err := doRequest("PUT | PROJECT |", http.MethodPut, url, body, c.AuthHeader)
-	if err != nil {
-		return Project{}, err
-	}
-
-	defer (*ioBody).Close()
-
-	newProject := Project{}
-	err = json.NewDecoder(*ioBody).Decode(&newProject)
-	if err != nil {
-		return Project{}, err
-	}
-
-	return newProject, nil
-}
-
-// PostProjectRun starts a new build by invoking the HTTP request:
-// 	POST /api/project/{projectID}/{stage}/run
-func (c Client) PostProjectRun(projectRun ProjectRun) (ProjectRunResponse, error) {
-	body, err := json.Marshal(projectRun)
-	if err != nil {
-		return ProjectRunResponse{}, err
-	}
-
-	url := fmt.Sprintf(
-		"%s/api/project/%d/%s/run?branch=%s&environment=%s",
-		c.APIURL,
-		projectRun.ProjectID,
-		projectRun.Stage,
-		projectRun.Branch,
-		projectRun.Environment)
-	ioBody, err := doRequest("POST | PROJECT RUN |", http.MethodPut, url, body, c.AuthHeader)
-	if err != nil {
-		return ProjectRunResponse{}, err
-	}
-
-	defer (*ioBody).Close()
-
-	newProject := ProjectRunResponse{}
-	err = json.NewDecoder(*ioBody).Decode(&newProject)
-	if err != nil {
-		return ProjectRunResponse{}, err
-	}
-
-	log.Debug().WithUint("buildRef", newProject.BuildID).Message("Started build.")
-	return newProject, nil
+// UpdateProject updates a project by ID by invoking the HTTP request:
+//  PUT /api/project/{projectID}
+func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
+	var updatedProject response.Project
+	path := fmt.Sprintf("/api/project/%d", projectID)
+	err := c.putJSONUnmarshal(path, nil, project, &updatedProject)
+	return updatedProject, err
 }
