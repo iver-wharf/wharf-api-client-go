@@ -89,11 +89,20 @@ npm run lint-md-fix
 You can lint all of the above at the same time by running:
 
 ```sh
-npm run lint
+make lint
 
-# Some errors can be fixed automatically. Keep in mind that this updates the
-# files in place.
-npm run lint-fix
+make lint-go # only lint Go code
+make lint-md # only lint Markdown files
+```
+
+Some errors can be fixed automatically. Keep in mind that this updates the
+files in place.
+
+```sh
+make lint-fix
+
+#make lint-fix-go # Go linter does not support fixes
+make lint-fix-md # only lint and fix Markdown files
 ```
 
 ---
