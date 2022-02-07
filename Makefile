@@ -1,6 +1,9 @@
-.PHONY: tidy deps \
+.PHONY: check tidy deps \
 	lint lint-md lint-go \
 	lint-fix lint-md-fix
+
+check:
+	go test ./...
 
 tidy:
 	go mod tidy
