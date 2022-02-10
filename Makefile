@@ -1,6 +1,6 @@
 .PHONY: check tidy deps \
 	lint lint-md lint-go \
-	lint-fix lint-md-fix
+	lint-fix lint-fix-md lint-fix-go
 
 check:
 	go test ./...
