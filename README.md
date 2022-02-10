@@ -57,33 +57,6 @@ GET | PROJECT | 125
 Project #125: MyProject
 ```
 
-## Linting Golang
-
-- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
-- Requires Revive to be installed: <https://revive.run/>
-
-```sh
-go get -u github.com/mgechev/revive
-```
-
-```sh
-npm run lint-go
-```
-
-## Linting markdown
-
-- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
-
-```sh
-npm install
-
-npm run lint-md
-
-# Some errors can be fixed automatically. Keep in mind that this updates the
-# files in place.
-npm run lint-md-fix
-```
-
 ## Linting
 
 ```sh
