@@ -86,9 +86,9 @@ npm run lint-md-fix
 
 ## Linting
 
-Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
-
 ```sh
+make deps # download linting dependencies
+
 make lint
 
 make lint-go # only lint Go code
