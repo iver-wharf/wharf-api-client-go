@@ -14,17 +14,17 @@ deps:
 	npm install
 
 lint: lint-md lint-go
-lint-fix: lint-md-fix lint-go-fix
+lint-fix: lint-fix-md lint-fix-go
 
 lint-md:
 	npx remark . .github
 
-lint-md-fix:
+lint-fix-md:
 	npx remark . .github -o
 
 lint-go:
 	goimports -d $(shell git ls-files "*.go")
 	revive -formatter stylish -config revive.toml ./...
 
-lint-go-fix:
+lint-fix-go:
 	goimports -d -w $(shell git ls-files "*.go")
