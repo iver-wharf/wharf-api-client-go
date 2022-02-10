@@ -86,7 +86,7 @@ npm run lint-md-fix
 
 ## Linting
 
-You can lint all of the above at the same time by running:
+Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
 
 ```sh
 make lint
