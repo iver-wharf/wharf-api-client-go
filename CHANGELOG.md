@@ -14,6 +14,15 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.1.0 (WIP)
 
+- Added `Client.CreateBuildLogStream` that uses wharf-api's gRPC API that was
+  introduced in wharf-api v5.1.0 to allow streaming log creation. (#35)
+
+- Added numerous dependencies:
+
+  - `google.golang.org/grpc` v1.44.0 (#35)
+  - `google.golang.org/protobuf` v1.27.1 (#35)
+  - `golang.org/x/oauth2` v0.0.0-20200107190931-bf48bf16ab8d (#35)
+
 - Changed minimum version of Go from 1.16 to 1.17. (#36)
 
 ## v2.0.0 (2022-01-25)
