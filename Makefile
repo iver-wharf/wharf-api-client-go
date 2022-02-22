@@ -1,4 +1,4 @@
-.PHONY: check tidy deps \
+.PHONY: check tidy deps proto \
 	lint lint-md lint-go \
 	lint-fix lint-fix-md lint-fix-go
 
@@ -11,7 +11,17 @@ tidy:
 deps:
 	go install github.com/mgechev/revive@latest
 	go install golang.org/x/tools/cmd/goimports@latest
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
+	go mod download
 	npm install
+
+proto:
+	protoc --go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		./api/wharfapi/v5/builds.proto
+# Generated files have some non-standard formatting, so let's format it.
+	goimports -w ./api/wharfapi/v5/.
 
 lint: lint-md lint-go
 lint-fix: lint-fix-md lint-fix-go
