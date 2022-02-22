@@ -12,14 +12,18 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.1.0 (WIP)
+
+- Changed minimum version of Go from 1.16 to 1.17. (#36)
+
 ## v2.0.0 (2022-01-25)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
   to `github.com/iver-wharf/wharf-api-client-go/v2`. (#30)
 
-- BREAKING: Changed minimum version of Go from 1.13 to 1.16. (#29)
-
 - BREAKING: Removed support for wharf-api v4.2.0 and below. (#29)
+
+- Changed minimum version of Go from 1.13 to 1.16. (#29)
 
 - Added support for `github.com/iver-wharf/wharf-api` v5.0.0. (#29)
 
