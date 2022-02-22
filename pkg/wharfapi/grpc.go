@@ -2,13 +2,20 @@ package wharfapi
 
 import (
 	"context"
+	"crypto/x509"
 	"errors"
+	"fmt"
 	"math"
+	"strings"
 
 	v5 "github.com/iver-wharf/wharf-api-client-go/v2/api/wharfapi/v5"
 	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/request"
 	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -16,7 +23,6 @@ import (
 // a streamed fashion.
 type CreateBuildLogStream interface {
 	Send([]request.Log) error
-	Close() error
 	CloseAndRecv() (response.CreatedLogsSummary, error)
 }
 
@@ -38,10 +44,6 @@ func (s createBuildLogStream) Send(logs []request.Log) error {
 	})
 }
 
-func (s createBuildLogStream) Close() error {
-	return s.stream.CloseSend()
-}
-
 func (s createBuildLogStream) CloseAndRecv() (response.CreatedLogsSummary, error) {
 	res, err := s.stream.CloseAndRecv()
 	if err != nil {
@@ -59,14 +61,66 @@ func (s createBuildLogStream) CloseAndRecv() (response.CreatedLogsSummary, error
 // creation requests in a streamed fashion by reusing the same TCP connection
 // for higher throughput during log injection.
 func (c *Client) CreateBuildLogStream(ctx context.Context) (CreateBuildLogStream, error) {
-	conn, err := grpc.Dial(c.APIURL)
+	conn, err := c.grpcDial()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("dial grpc: %w", err)
 	}
 	builds := v5.NewBuildsClient(conn)
 	stream, err := builds.CreateLogStream(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open log creation stream: %w", err)
 	}
 	return createBuildLogStream{stream}, nil
+}
+
+func (c *Client) grpcDial() (*grpc.ClientConn, error) {
+	transportCred, err := c.grpcTransportCred()
+	if err != nil {
+		return nil, fmt.Errorf("get transport credentials: %w", err)
+	}
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(transportCred),
+	}
+	if c.AuthHeader != "" {
+		typ, token, ok := cutString(c.AuthHeader, ' ')
+		if !ok {
+			return nil, errors.New("invalid auth header format, expected 'Bearer abc123'")
+		}
+		perRPC := oauth.NewOauthAccess(&oauth2.Token{
+			TokenType:   typ,
+			AccessToken: token,
+		})
+		opts = append(opts, grpc.WithPerRPCCredentials(perRPC))
+	}
+	return grpc.Dial(trimProtocol(c.APIURL), opts...)
+}
+
+func (c *Client) grpcTransportCred() (credentials.TransportCredentials, error) {
+	if !strings.HasPrefix(c.APIURL, "https://") {
+		return insecure.NewCredentials(), nil
+	}
+	certPool, err := x509.SystemCertPool()
+	if err != nil {
+		return nil, fmt.Errorf("load system cert pool: %w", err)
+	}
+	return credentials.NewClientTLSFromCert(certPool, ""), nil
+}
+
+func cutString(str string, delimiter byte) (string, string, bool) {
+	idx := strings.IndexByte(str, delimiter)
+	if idx == -1 {
+		return str, "", false
+	}
+	return str[:idx], str[idx+1:], true
+}
+
+func trimProtocol(v string) string {
+	switch {
+	case strings.HasPrefix(v, "http://"):
+		return strings.TrimPrefix(v, "http://")
+	case strings.HasPrefix(v, "https://"):
+		return strings.TrimPrefix(v, "https://")
+	default:
+		return v
+	}
 }
