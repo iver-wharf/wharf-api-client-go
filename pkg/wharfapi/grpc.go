@@ -107,22 +107,3 @@ func (c *Client) grpcTransportCred() (credentials.TransportCredentials, error) {
 	}
 	return credentials.NewClientTLSFromCert(certPool, ""), nil
 }
-
-func cutString(str string, delimiter byte) (string, string, bool) {
-	idx := strings.IndexByte(str, delimiter)
-	if idx == -1 {
-		return str, "", false
-	}
-	return str[:idx], str[idx+1:], true
-}
-
-func trimProtocol(v string) string {
-	switch {
-	case strings.HasPrefix(v, "http://"):
-		return strings.TrimPrefix(v, "http://")
-	case strings.HasPrefix(v, "https://"):
-		return strings.TrimPrefix(v, "https://")
-	default:
-		return v
-	}
-}
