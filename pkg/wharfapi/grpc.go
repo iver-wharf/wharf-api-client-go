@@ -60,6 +60,8 @@ func (s createBuildLogStream) CloseAndRecv() (response.CreatedLogsSummary, error
 // CreateBuildLogStream creates a log creation stream used to sending log
 // creation requests in a streamed fashion by reusing the same TCP connection
 // for higher throughput during log injection.
+//
+// Added in wharf-api v5.1.0.
 func (c *Client) CreateBuildLogStream(ctx context.Context) (CreateBuildLogStream, error) {
 	conn, err := c.grpcDial()
 	if err != nil {
