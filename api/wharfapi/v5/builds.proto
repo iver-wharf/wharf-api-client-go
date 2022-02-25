@@ -3,6 +3,10 @@ syntax = "proto3";
 package wharf.api.v5;
 
 import "google/protobuf/timestamp.proto";
+import "patch/go.proto";
+
+option (go.lint).all = true;
+option (go.lint).initialisms = "ID";
 
 option go_package =
   "github.com/iver-wharf/wharf-api-client-go/v5/api/wharfapi/v5";
@@ -34,14 +38,16 @@ message CreateLogStreamResponse {
 // NewLogLine is a single log line produced by a Wharf build to be added to the
 // database.
 message NewLogLine {
-  // BuildId is the database ID of the build this log line belongs to.
+  // BuildID is the database ID of the build this log line belongs to.
   uint64 build_id = 1;
-  // LogId is the worker's own ID of the log line. It's unique per build step
+  // LogID is the worker's own ID of the log line. It's unique per build step
   // for a given build, but may have collisons across multiple steps or builds.
-  uint64 log_id = 2; // not DB value; worker's own ID of the log line
-  // StepId is the worker's own ID of the step. It's unique for a given build,
-  // but may have collisons across multiple builds.
-  uint64 step_id = 3; // not DB value; worker's own ID of the step ID
+  // Not database value, but instead worker's own ID of the log line.
+  uint64 log_id = 2;
+  // StepID is the worker's own ID of the step. It's unique for a given build,
+  // but may have collisions across multiple builds.
+  // Not database value, but instead worker's own ID of the step ID.
+  uint64 step_id = 3;
   // Timestamp is when the log line was outputted from the build step.
   google.protobuf.Timestamp timestamp = 4;
   // Message is the log line text.

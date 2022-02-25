@@ -15,6 +15,8 @@ require (
 	gopkg.in/guregu/null.v4 v4.0.0
 )
 
+require github.com/alta/protopatch v0.5.0
+
 require (
 	cloud.google.com/go v0.46.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

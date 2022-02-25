@@ -34,7 +34,7 @@ func (s createBuildLogStream) Send(logs []request.Log) error {
 	grpcLogLines := make([]*v5.NewLogLine, len(logs))
 	for i, log := range logs {
 		grpcLogLines[i] = &v5.NewLogLine{
-			BuildId:   uint64(log.BuildID),
+			BuildID:   uint64(log.BuildID),
 			Message:   log.Message,
 			Timestamp: timestamppb.New(log.Timestamp),
 		}
