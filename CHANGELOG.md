@@ -19,9 +19,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added numerous dependencies:
 
+  - `github.com/alta/protopatch` v0.5.0 (#35)
+  - `golang.org/x/oauth2` v0.0.0-20200107190931-bf48bf16ab8d (#35)
   - `google.golang.org/grpc` v1.44.0 (#35)
   - `google.golang.org/protobuf` v1.27.1 (#35)
-  - `golang.org/x/oauth2` v0.0.0-20200107190931-bf48bf16ab8d (#35)
 
 - Changed minimum version of Go from 1.16 to 1.17. (#36)
 
