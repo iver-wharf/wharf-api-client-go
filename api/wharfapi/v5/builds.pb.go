@@ -7,12 +7,13 @@
 package v5
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "github.com/alta/protopatch/patch/gopb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
