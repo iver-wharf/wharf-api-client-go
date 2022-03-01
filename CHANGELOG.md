@@ -16,6 +16,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed minimum version of Go from 1.16 to 1.17. (#36)
 
+- Added `WorkerID` to `response.Build` model, as added in
+  [wharf-api#156](https://github.com/iver-wharf/wharf-api/pull/156). (#38)
+
 ## v2.0.0 (2022-01-25)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
