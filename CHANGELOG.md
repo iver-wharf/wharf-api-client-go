@@ -16,6 +16,27 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed minimum version of Go from 1.16 to 1.17. (#36)
 
+- Added methods for API health and metadata: (#39)
+
+  - `Client.GetHealth() HealthStatus`: `GET /api/health`
+  - `Client.GetVersion() app.Version`: `GET /api/version`
+  - `Client.Ping() Ping`: `GET /api/ping`
+
+- Added client and server version validation on all endpoints. This is disabled
+  by default, but can be enabled with the following new flags: (#39)
+
+  ```go
+  client := wharfapi.Client{
+      ErrIfOutdatedClient: true,
+      ErrIfOutdatedServer: true,
+	}
+  ```
+
+- Changed `Client` method receiver to a pointer on all methods. This will not
+  break regular usage, but may break edge case usages during compilation. (#39)
+
+- Added dependency `github.com/blang/semver/v4` v4.0.0. (#39)
+
 ## v2.0.0 (2022-01-25)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
