@@ -37,10 +37,7 @@ func TestValidateVersion_serverVersionOK(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			apiVer := semver.MustParse(test.apiVer)
-			c := Client{ErrIfOutdatedServer: true, cachedVersion: &apiVer, hasCheckedVersion: true}
-			endpointVer := semver.MustParse(test.endpointVer)
-			err := c.validateEndpointVersion(endpointVer.Major, endpointVer.Minor, endpointVer.Patch)
+			err := testValidateServerVersion(t, test.apiVer, test.endpointVer)
 			require.NoError(t, err)
 		})
 	}
@@ -71,11 +68,7 @@ func TestValidateVersion_serverVersionError(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			apiVer := semver.MustParse(test.apiVer)
-			c := Client{ErrIfOutdatedServer: true, cachedVersion: &apiVer, hasCheckedVersion: true}
-			endpointVer := semver.MustParse(test.endpointVer)
-			err := c.validateEndpointVersion(endpointVer.Major, endpointVer.Minor, endpointVer.Patch)
-			require.Error(t, err)
+			err := testValidateServerVersion(t, test.apiVer, test.endpointVer)
 			require.ErrorIs(t, err, ErrOutdatedServer)
 		})
 	}
@@ -108,15 +101,10 @@ func TestValidateVersion_clientVersionOk(t *testing.T) {
 			clientVer: "5.0.0",
 		},
 	}
-	oldHighest := HighestSupportedVersion
-	defer func() { HighestSupportedVersion = oldHighest }()
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			apiVer := semver.MustParse(test.apiVer)
-			c := Client{ErrIfOutdatedClient: true, cachedVersion: &apiVer, hasCheckedVersion: true}
-			HighestSupportedVersion = semver.MustParse(test.clientVer)
-			err := c.validateEndpointVersion(apiVer.Major, apiVer.Minor, apiVer.Patch)
+			err := testValidateClientVersion(t, test.apiVer, test.clientVer)
 			require.NoError(t, err)
 		})
 	}
@@ -144,12 +132,32 @@ func TestValidateVersion_clientVersionError(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			apiVer := semver.MustParse(test.apiVer)
-			c := Client{ErrIfOutdatedClient: true, cachedVersion: &apiVer, hasCheckedVersion: true}
-			HighestSupportedVersion = semver.MustParse(test.clientVer)
-			err := c.validateEndpointVersion(apiVer.Major, apiVer.Minor, apiVer.Patch)
-			require.Error(t, err)
+			err := testValidateClientVersion(t, test.apiVer, test.clientVer)
 			require.ErrorIs(t, err, ErrOutdatedClient)
 		})
 	}
+}
+
+func testValidateServerVersion(t *testing.T, apiVerStr, endpointVerStr string) error {
+	apiVer := testParseVersion(t, apiVerStr)
+	endpointVer := testParseVersion(t, endpointVerStr)
+	c := Client{ErrIfOutdatedServer: true, cachedVersion: &apiVer, hasCheckedVersion: true}
+	return c.validateEndpointVersion(endpointVer.Major, endpointVer.Minor, endpointVer.Patch)
+}
+
+func testValidateClientVersion(t *testing.T, apiVerStr, clientVerStr string) error {
+	oldHighest := HighestSupportedVersion
+	defer func() { HighestSupportedVersion = oldHighest }()
+
+	apiVer := testParseVersion(t, apiVerStr)
+	clientVer := testParseVersion(t, clientVerStr)
+	HighestSupportedVersion = clientVer
+	c := Client{ErrIfOutdatedClient: true, cachedVersion: &apiVer, hasCheckedVersion: true}
+	return c.validateEndpointVersion(apiVer.Major, apiVer.Minor, apiVer.Patch)
+}
+
+func testParseVersion(t *testing.T, str string) semver.Version {
+	v, err := semver.Parse(str)
+	require.NoErrorf(t, err, "parse version: %q", str)
+	return v
 }
