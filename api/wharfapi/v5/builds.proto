@@ -23,8 +23,20 @@ service Builds {
 // CreateLogStreamRequest contains the streamed log lines that meant to be
 // created.
 message CreateLogStreamRequest {
-  // Lines is an array of log lines to allow chunking log line streams.
-  repeated NewLogLine lines = 1;
+  // BuildID is the database ID of the build this log line belongs to.
+  uint64 build_id = 1;
+  // WorkerLogID is the worker's own ID of the log line. It's unique per build step
+  // for a given build, but may have collisons across multiple steps or builds.
+  // Not database value, but instead worker's own ID of the log line.
+  uint64 worker_log_id = 2;
+  // WorkerStepID is the worker's own ID of the step. It's unique for a given build,
+  // but may have collisions across multiple builds.
+  // Not database value, but instead worker's own ID of the step ID.
+  uint64 worker_step_id = 3;
+  // Timestamp is when the log line was outputted from the build step.
+  google.protobuf.Timestamp timestamp = 4;
+  // Message is the log line text.
+  string message = 5;
 }
 
 // CreateLogStreamResponse is the response returned after closing a log creation
@@ -33,23 +45,4 @@ message CreateLogStreamResponse {
   // LinesInserted is the number of lines that has been inserted in total by
   // this stream.
   uint64 lines_inserted = 1;
-}
-
-// NewLogLine is a single log line produced by a Wharf build to be added to the
-// database.
-message NewLogLine {
-  // BuildID is the database ID of the build this log line belongs to.
-  uint64 build_id = 1;
-  // LogID is the worker's own ID of the log line. It's unique per build step
-  // for a given build, but may have collisons across multiple steps or builds.
-  // Not database value, but instead worker's own ID of the log line.
-  uint64 log_id = 2;
-  // StepID is the worker's own ID of the step. It's unique for a given build,
-  // but may have collisions across multiple builds.
-  // Not database value, but instead worker's own ID of the step ID.
-  uint64 step_id = 3;
-  // Timestamp is when the log line was outputted from the build step.
-  google.protobuf.Timestamp timestamp = 4;
-  // Message is the log line text.
-  string message = 5;
 }

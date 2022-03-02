@@ -22,7 +22,7 @@ import (
 // CreateBuildLogStream contains methods for sending log creation requests in
 // a streamed fashion.
 type CreateBuildLogStream interface {
-	Send([]request.Log) error
+	Send(request.Log) error
 	CloseAndRecv() (response.CreatedLogsSummary, error)
 }
 
@@ -30,17 +30,13 @@ type createBuildLogStream struct {
 	stream v5.Builds_CreateLogStreamClient
 }
 
-func (s createBuildLogStream) Send(logs []request.Log) error {
-	grpcLogLines := make([]*v5.NewLogLine, len(logs))
-	for i, log := range logs {
-		grpcLogLines[i] = &v5.NewLogLine{
-			BuildID:   uint64(log.BuildID),
-			Message:   log.Message,
-			Timestamp: timestamppb.New(log.Timestamp),
-		}
-	}
+func (s createBuildLogStream) Send(log request.Log) error {
 	return s.stream.Send(&v5.CreateLogStreamRequest{
-		Lines: grpcLogLines,
+		BuildID:      uint64(log.BuildID),
+		WorkerLogID:  uint64(log.WorkerLogID),
+		WorkerStepID: uint64(log.WorkerStepID),
+		Timestamp:    timestamppb.New(log.Timestamp),
+		Message:      log.Message,
 	})
 }
 
