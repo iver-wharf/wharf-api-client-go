@@ -24,7 +24,12 @@ type ProviderSearch struct {
 
 // GetProvider fetches a provider by ID by invoking the HTTP request:
 //  GET /api/provider/{providerID}
+//
+// Added in wharf-api v0.3.9.
 func (c *Client) GetProvider(providerID uint) (response.Provider, error) {
+	if err := c.validateEndpointVersion(0, 3, 9); err != nil {
+		return response.Provider{}, err
+	}
 	var provider response.Provider
 	path := fmt.Sprintf("/api/provider/%d", providerID)
 	err := c.getUnmarshal(path, nil, &provider)
@@ -34,7 +39,12 @@ func (c *Client) GetProvider(providerID uint) (response.Provider, error) {
 // GetProviderList filters providers based on the parameters by invoking the HTTP
 // request:
 //  GET /api/provider
+//
+// Added in wharf-api v5.0.0.
 func (c *Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return response.PaginatedProviders{}, err
+	}
 	var providers response.PaginatedProviders
 
 	q, err := query.Values(params)
@@ -50,7 +60,12 @@ func (c *Client) GetProviderList(params ProviderSearch) (response.PaginatedProvi
 // UpdateProvider updates the provider with the specified ID by invoking the
 // HTTP request:
 //  PUT /api/provider/{providerID}
+//
+// Added in wharf-api v5.0.0.
 func (c *Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return response.Provider{}, err
+	}
 	var updatedProvider response.Provider
 	path := fmt.Sprintf("/api/provider/%d", providerID)
 	err := c.putJSONUnmarshal(path, nil, provider, &updatedProvider)
@@ -59,7 +74,12 @@ func (c *Client) UpdateProvider(providerID uint, provider request.ProviderUpdate
 
 // CreateProvider creates a new provider by invoking the HTTP request:
 //  POST /api/provider
+//
+// Added in wharf-api v0.3.9.
 func (c *Client) CreateProvider(provider request.Provider) (response.Provider, error) {
+	if err := c.validateEndpointVersion(0, 3, 9); err != nil {
+		return response.Provider{}, err
+	}
 	var newProvider response.Provider
 	path := "/api/provider"
 	err := c.postJSONUnmarshal(path, nil, provider, &newProvider)

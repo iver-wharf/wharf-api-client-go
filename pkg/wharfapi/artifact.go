@@ -25,7 +25,12 @@ type ArtifactSearch struct {
 // GetBuildArtifactList filters artifacts based on the parameters by invoking the HTTP
 // request:
 //  GET /api/build/{buildId}/artifact
+//
+// Added in wharf-api v5.0.0.
 func (c *Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (response.PaginatedArtifacts, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return response.PaginatedArtifacts{}, err
+	}
 	var artifacts response.PaginatedArtifacts
 	q, err := query.Values(params)
 	if err != nil {
@@ -38,7 +43,12 @@ func (c *Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (resp
 
 // GetBuildArtifact gets an artifact by invoking the HTTP request:
 //  GET /api/build/{buildId}/artifact/{artifactId}
+//
+// Added in wharf-api v0.7.1.
 func (c *Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, error) {
+	if err := c.validateEndpointVersion(0, 7, 1); err != nil {
+		return response.Artifact{}, err
+	}
 	var artifact response.Artifact
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
 	err := c.getUnmarshal(path, nil, &artifact)

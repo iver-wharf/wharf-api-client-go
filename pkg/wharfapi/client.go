@@ -2,12 +2,13 @@ package wharfapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 
-	"github.com/Masterminds/semver/v3"
+	"github.com/blang/semver/v4"
 )
 
 // AuthError is returned on authentication/authorization errors issued when
@@ -23,6 +24,17 @@ func (e *AuthError) Error() string {
 	return e.Realm
 }
 
+var (
+	// ErrOutdatedServer is returned from an endpoint method when the
+	// Client.ErrIfOutdatedServer flag is enabled and the server is of a lower
+	// version than when the endpoint was first introduced to the wharf-api.
+	ErrOutdatedServer = errors.New("outdated server")
+	// ErrOutdatedClient is returned from an endpoint method when the
+	// Client.ErrIfOutdatedClient flag is enabled and the client is of a too
+	// low version than when the server.
+	ErrOutdatedClient = errors.New("outdated client")
+)
+
 // Client contains authentication and API URLs used to access
 // the Wharf main API.
 type Client struct {
@@ -33,8 +45,10 @@ type Client struct {
 	// for a backward compatability of 1 major version back, so the client will
 	// only prematurely error before making a request if the client is 2 major
 	// versions behind or more. Example:
+	//
 	//   Server version        Client supports        Client outdated?
 	//   v5.0.0                v5.0.0                 No
+	//   v5.1.0                v5.0.0                 No
 	//   v6.0.0                v5.0.0                 No
 	//   v6.12.5               v5.0.0                 No
 	//   v7.0.0                v5.0.0                 Yes
@@ -49,8 +63,9 @@ type Client struct {
 }
 
 // HighestSupportedVersion is the highest version that the wharf-api-client-go
-// is known to work for.
-var HighestSupportedVersion = semver.MustParse("v5.1.0")
+// is known to work for. It is used when checking if the client is outdated,
+// given the Client.ErrIfOutdatedClient is enabled.
+var HighestSupportedVersion = semver.MustParse("5.1.0")
 
 // WharfClient contains authentication and API URLs used to access
 // the Wharf main API.
@@ -139,44 +154,62 @@ func (c *Client) newRequest(method, path string, q url.Values, body []byte) (*ht
 	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
 }
 
+// SetCachedVersion will override the version that the wharf-api-client-go
+// thinks the remote API has when validating the Client.ErrIfOutdatedServer.
+func (c *Client) SetCachedVersion(major, minor, patch uint64) {
+	c.hasCheckedVersion = true
+	c.cachedVersion = &semver.Version{
+		Major: major,
+		Minor: minor,
+		Patch: patch,
+	}
+}
+
+// ResetCachedVersion will reset the version that the wharf-api client thinks
+// the remote API has, and will then check for a fresh value on the next request.
+func (c *Client) ResetCachedVersion() {
+	c.hasCheckedVersion = false
+	c.cachedVersion = nil
+}
+
 func (c *Client) getCachedOrFetchedVersion() *semver.Version {
 	if c.hasCheckedVersion {
 		return c.cachedVersion
 	}
-	c.hasCheckedVersion = true
-	resp, err := c.GetVersion()
-	if err != nil {
-		log.Warn().WithError(err).
-			Message("Failed to get version from API. Version validation is turned off. Use at your own risk.")
-		return nil
-	}
-	v, err := semver.NewVersion(resp.Version)
-	if err != nil {
-		log.Warn().WithError(err).
-			WithString("version", resp.Version).
-			Message("Failed to parse version from API. Version validation is turned off. Use at your own risk.")
+	_, err := c.GetVersion()
+	if err != nil || c.cachedVersion == nil {
 		return nil
 	}
 	log.Debug().
-		WithStringer("version", v).
+		WithStringer("version", c.cachedVersion).
 		Message("Detected server version.")
-	c.cachedVersion = v
-	return v
+	return c.cachedVersion
 }
 
-func (c *Client) validateEndpointVersion(endpointVersion *semver.Version) error {
+func (c *Client) validateEndpointVersion(major, minor, patch uint64) error {
 	if !c.ErrIfOutdatedClient && !c.ErrIfOutdatedServer {
+		// micro-optimization:
+		// skip fetching version if we don't even care about versions
 		return nil
 	}
 	apiVersion := c.getCachedOrFetchedVersion()
+	return c.validateEndpointVersionNoLookup(major, minor, patch, apiVersion)
+}
+
+func (c *Client) validateEndpointVersionNoLookup(major, minor, patch uint64, apiVersion *semver.Version) error {
 	if apiVersion == nil {
 		return nil
 	}
-	if c.ErrIfOutdatedServer && apiVersion.LessThan(endpointVersion) {
+	endpointVersion := semver.Version{
+		Major: major,
+		Minor: minor,
+		Patch: patch,
+	}
+	if c.ErrIfOutdatedServer && apiVersion.LT(endpointVersion) {
 		return fmt.Errorf("%w: %s (server) is less than %s (when endpoint was introduced)",
 			ErrOutdatedServer, apiVersion, endpointVersion)
 	}
-	if c.ErrIfOutdatedClient && HighestSupportedVersion.Major()+1 < apiVersion.Major() {
+	if c.ErrIfOutdatedClient && HighestSupportedVersion.Major+1 < apiVersion.Major {
 		return fmt.Errorf("%w: %s (server) is too new for %s (highest supported version by client)",
 			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
 	}
