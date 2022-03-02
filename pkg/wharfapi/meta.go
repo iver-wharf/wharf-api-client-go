@@ -1,6 +1,15 @@
 package wharfapi
 
-import "github.com/iver-wharf/wharf-core/pkg/app"
+import (
+	"errors"
+
+	"github.com/iver-wharf/wharf-core/pkg/app"
+)
+
+var (
+	ErrOutdatedServer = errors.New("outdated server")
+	ErrOutdatedClient = errors.New("outdated client")
+)
 
 // GetVersion gets the version of the API by invoking the
 // HTTP request:

@@ -3,6 +3,7 @@ module github.com/iver-wharf/wharf-api-client-go/v2
 go 1.17
 
 require (
+	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/google/go-querystring v1.1.0
 	github.com/iver-wharf/wharf-core v1.3.0
 	github.com/stretchr/testify v1.7.0
