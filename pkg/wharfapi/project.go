@@ -31,7 +31,7 @@ type ProjectSearch struct {
 // CreateProject adds a new project to the database by invoking the
 // HTTP request:
 //  POST /api/project
-func (c Client) CreateProject(project request.Project) (response.Project, error) {
+func (c *Client) CreateProject(project request.Project) (response.Project, error) {
 	var newProject response.Project
 	path := "/api/project"
 	err := c.postJSONUnmarshal(path, nil, project, &newProject)
@@ -40,7 +40,7 @@ func (c Client) CreateProject(project request.Project) (response.Project, error)
 
 // GetProject fetches a project by ID by invoking the HTTP request:
 //  GET /api/project/{projectID}
-func (c Client) GetProject(projectID uint) (response.Project, error) {
+func (c *Client) GetProject(projectID uint) (response.Project, error) {
 	path := fmt.Sprintf("/api/project/%v", projectID)
 	var project response.Project
 	err := c.getUnmarshal(path, nil, &project)
@@ -50,7 +50,7 @@ func (c Client) GetProject(projectID uint) (response.Project, error) {
 // GetProjectList filters projects based on the parameters by invoking the HTTP
 // request:
 //  GET /api/project
-func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects, error) {
+func (c *Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects, error) {
 	var projects response.PaginatedProjects
 	q, err := query.Values(params)
 	if err != nil {
@@ -63,7 +63,7 @@ func (c Client) GetProjectList(params ProjectSearch) (response.PaginatedProjects
 
 // UpdateProject updates a project by ID by invoking the HTTP request:
 //  PUT /api/project/{projectID}
-func (c Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
+func (c *Client) UpdateProject(projectID uint, project request.ProjectUpdate) (response.Project, error) {
 	var updatedProject response.Project
 	path := fmt.Sprintf("/api/project/%d", projectID)
 	err := c.putJSONUnmarshal(path, nil, project, &updatedProject)

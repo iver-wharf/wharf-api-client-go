@@ -24,7 +24,7 @@ type ProviderSearch struct {
 
 // GetProvider fetches a provider by ID by invoking the HTTP request:
 //  GET /api/provider/{providerID}
-func (c Client) GetProvider(providerID uint) (response.Provider, error) {
+func (c *Client) GetProvider(providerID uint) (response.Provider, error) {
 	var provider response.Provider
 	path := fmt.Sprintf("/api/provider/%d", providerID)
 	err := c.getUnmarshal(path, nil, &provider)
@@ -34,7 +34,7 @@ func (c Client) GetProvider(providerID uint) (response.Provider, error) {
 // GetProviderList filters providers based on the parameters by invoking the HTTP
 // request:
 //  GET /api/provider
-func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
+func (c *Client) GetProviderList(params ProviderSearch) (response.PaginatedProviders, error) {
 	var providers response.PaginatedProviders
 
 	q, err := query.Values(params)
@@ -50,7 +50,7 @@ func (c Client) GetProviderList(params ProviderSearch) (response.PaginatedProvid
 // UpdateProvider updates the provider with the specified ID by invoking the
 // HTTP request:
 //  PUT /api/provider/{providerID}
-func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
+func (c *Client) UpdateProvider(providerID uint, provider request.ProviderUpdate) (response.Provider, error) {
 	var updatedProvider response.Provider
 	path := fmt.Sprintf("/api/provider/%d", providerID)
 	err := c.putJSONUnmarshal(path, nil, provider, &updatedProvider)
@@ -59,7 +59,7 @@ func (c Client) UpdateProvider(providerID uint, provider request.ProviderUpdate)
 
 // CreateProvider creates a new provider by invoking the HTTP request:
 //  POST /api/provider
-func (c Client) CreateProvider(provider request.Provider) (response.Provider, error) {
+func (c *Client) CreateProvider(provider request.Provider) (response.Provider, error) {
 	var newProvider response.Provider
 	path := "/api/provider"
 	err := c.postJSONUnmarshal(path, nil, provider, &newProvider)

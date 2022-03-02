@@ -48,7 +48,7 @@ type ProjectStartBuild struct {
 // GetBuildList filters builds based on the parameters by invoking the HTTP
 // request:
 //  GET /api/build
-func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
+func (c *Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, error) {
 	var builds response.PaginatedBuilds
 	q, err := query.Values(&params)
 	if err != nil {
@@ -61,7 +61,7 @@ func (c Client) GetBuildList(params BuildSearch) (response.PaginatedBuilds, erro
 
 // GetBuild gets a build by invoking the HTTP request:
 //  GET /api/build/{buildId}
-func (c Client) GetBuild(buildID uint) (response.Build, error) {
+func (c *Client) GetBuild(buildID uint) (response.Build, error) {
 	path := fmt.Sprintf("/api/build/%d", buildID)
 	var build response.Build
 	err := c.getUnmarshal(path, nil, &build)
@@ -70,7 +70,7 @@ func (c Client) GetBuild(buildID uint) (response.Build, error) {
 
 // UpdateBuildStatus updates a build by invoking the HTTP request:
 //  PUT /api/build/{buildId}/status
-func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
+func (c *Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate) (response.Build, error) {
 	var updatedBuild response.Build
 	path := fmt.Sprintf("/api/build/%d/status", buildID)
 	err := c.putJSONUnmarshal(path, nil, status, &updatedBuild)
@@ -79,7 +79,7 @@ func (c Client) UpdateBuildStatus(buildID uint, status request.LogOrStatusUpdate
 
 // CreateBuildLog adds a new log to a build by invoking the HTTP request:
 //  POST /api/build/{buildId}/log
-func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
+func (c *Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate) error {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
 	ioBody, err := c.postJSON(path, nil, buildLog)
 	if err != nil {
@@ -90,7 +90,7 @@ func (c Client) CreateBuildLog(buildID uint, buildLog request.LogOrStatusUpdate)
 
 // GetBuildLogList gets the logs for a build by invoking the HTTP request:
 //  GET /api/build/{buildId}/log
-func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
+func (c *Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 	path := fmt.Sprintf("/api/build/%d/log", buildID)
 	var logs []response.Log
 	err := c.getUnmarshal(path, nil, &logs)
@@ -99,7 +99,7 @@ func (c Client) GetBuildLogList(buildID uint) ([]response.Log, error) {
 
 // StartProjectBuild starts a new build by invoking the HTTP request:
 //  POST /api/project/{projectID}/build
-func (c Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
+func (c *Client) StartProjectBuild(projectID uint, params ProjectStartBuild, inputs request.BuildInputs) (response.BuildReferenceWrapper, error) {
 	var newBuildRef response.BuildReferenceWrapper
 	q, err := query.Values(params)
 	if err != nil {
