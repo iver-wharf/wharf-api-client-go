@@ -1,7 +1,10 @@
 package wharfapi
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
 )
@@ -79,4 +82,31 @@ func (c *Client) GetBuildAllTestResultListSummary(buildID uint) (response.TestRe
 	path := fmt.Sprintf("/api/build%d/test-result/list-summary", buildID)
 	err := c.getUnmarshal(path, nil, &listSummary)
 	return listSummary, err
+}
+
+// CreateBuildTestResult uploads a test result file (eg: "tests.trx") by
+// invoking the HTTP request:
+//  POST /api/build/{buildId}/test-result
+//
+// Added in wharf-api v5.0.0.
+func (c *Client) CreateBuildTestResult(buildID uint, fileName string, testResult io.Reader) ([]response.ArtifactMetadata, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return nil, err
+	}
+	path := fmt.Sprintf("/api/build/%d/test-result", buildID)
+	body, err := c.uploadMultipart(http.MethodPost, path, map[string]file{
+		"files": {
+			fileName: fileName,
+			reader:   testResult,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+	var resp []response.ArtifactMetadata
+	if err := json.NewDecoder(body).Decode(&resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

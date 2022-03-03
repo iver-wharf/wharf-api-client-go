@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 
@@ -149,15 +150,6 @@ func (c *Client) newRequest(method, path string, q url.Values, body io.Reader) (
 	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
 }
 
-func newJSONEncodeReader(obj interface{}) io.ReadCloser {
-	r, w := io.Pipe()
-	enc := json.NewEncoder(w)
-	go func(obj interface{}, enc *json.Encoder, w *io.PipeWriter) {
-		enc.Encode(obj)
-	}(obj, enc, w)
-	return r
-}
-
 // SetCachedVersion will override the version that the wharf-api-client-go
 // thinks the remote API has when validating the Client.ErrIfOutdatedServer.
 func (c *Client) SetCachedVersion(major, minor, patch uint64) {
@@ -262,4 +254,58 @@ func (c *Client) validateClientVersion(apiVersion semver.Version) (logger.Level,
 	default:
 		return 0, nil
 	}
+}
+
+func newJSONEncodeReader(obj interface{}) io.ReadCloser {
+	r, w := io.Pipe()
+	enc := json.NewEncoder(w)
+	go func(obj interface{}, enc *json.Encoder, w *io.PipeWriter) {
+		enc.Encode(obj)
+	}(obj, enc, w)
+	return r
+}
+
+type file struct {
+	fileName string
+	reader   io.Reader
+}
+
+func (c Client) uploadMultipart(method, path string, files map[string]file) (io.ReadCloser, error) {
+	pipeReader, pipeWriter := io.Pipe()
+	defer pipeReader.Close()
+	mw := multipart.NewWriter(pipeWriter)
+
+	go writeMultipartFiles(mw, pipeWriter, files)
+
+	req, err := c.newRequest(method, path, nil, pipeReader)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	return doRequest(req)
+}
+
+type closerWithError interface {
+	Close() error
+	CloseWithError(err error) error
+}
+
+func writeMultipartFiles(mw *multipart.Writer, closer closerWithError, files map[string]file) {
+	for field, file := range files {
+		fw, err := mw.CreateFormFile(field, file.fileName)
+		if err != nil {
+			closer.CloseWithError(err)
+			return
+		}
+		_, err = io.Copy(fw, file.reader)
+		if err != nil {
+			closer.CloseWithError(err)
+			return
+		}
+	}
+	// NOTE: Closing multipart.Writer writes the terminating multipart
+	// boundary, so it must be closed before the pipeWriter, otherwise
+	// we get an io.ErrUnexpectedEOF error
+	mw.Close()
+	closer.Close()
 }

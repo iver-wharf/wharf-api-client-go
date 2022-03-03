@@ -2,6 +2,8 @@ package wharfapi
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/google/go-querystring/query"
 	"github.com/iver-wharf/wharf-api-client-go/v2/pkg/model/response"
@@ -46,6 +48,7 @@ func (c *Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (resp
 //
 // Added in wharf-api v0.7.1.
 func (c *Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, error) {
+	// TODO: Receive multipart file, not response.Artifact
 	if err := c.validateEndpointVersion(0, 7, 1); err != nil {
 		return response.Artifact{}, err
 	}
@@ -53,4 +56,25 @@ func (c *Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, 
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
 	err := c.getUnmarshal(path, nil, &artifact)
 	return artifact, err
+}
+
+// CreateBuildArtifact uploads an artifact by invoking the HTTP request:
+//  POST /api/build/{buildId}/artifact
+//
+// Added in wharf-api v0.4.9.
+func (c Client) CreateBuildArtifact(buildID uint, fileName string, artifact io.Reader) error {
+	if err := c.validateEndpointVersion(0, 4, 9); err != nil {
+		return err
+	}
+	path := fmt.Sprintf("/api/build/%d/artifact", buildID)
+	resp, err := c.uploadMultipart(http.MethodPost, path, map[string]file{
+		"files": {
+			fileName: fileName,
+			reader:   artifact,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return resp.Close()
 }
