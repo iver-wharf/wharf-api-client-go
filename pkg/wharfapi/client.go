@@ -95,14 +95,11 @@ func (c *Client) getUnmarshal(path string, q url.Values, response interface{}) e
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(ioBody).Decode(response)
-	if err != nil {
-		return err
-	}
-	return ioBody.Close()
+	defer ioBody.Close()
+	return json.NewDecoder(ioBody).Decode(response)
 }
 
-func (c *Client) post(path string, q url.Values, body []byte) (io.ReadCloser, error) {
+func (c *Client) post(path string, q url.Values, body io.Reader) (io.ReadCloser, error) {
 	req, err := c.newRequest(http.MethodPost, path, q, body)
 	if err != nil {
 		return nil, err
@@ -110,27 +107,22 @@ func (c *Client) post(path string, q url.Values, body []byte) (io.ReadCloser, er
 	return doRequest(req)
 }
 
-func (c *Client) postJSON(path string, q url.Values, obj interface{}) (io.ReadCloser, error) {
-	bodyBytes, err := json.Marshal(&obj)
-	if err != nil {
-		return nil, err
-	}
-	return c.post(path, q, bodyBytes)
+func (c *Client) postJSON(path string, q url.Values, request interface{}) (io.ReadCloser, error) {
+	r := newJSONEncodeReader(request)
+	defer r.Close()
+	return c.post(path, q, r)
 }
 
-func (c *Client) postJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
-	ioBody, err := c.postJSON(path, q, obj)
+func (c *Client) postJSONUnmarshal(path string, q url.Values, request, response interface{}) error {
+	body, err := c.postJSON(path, q, request)
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(ioBody).Decode(response)
-	if err != nil {
-		return err
-	}
-	return ioBody.Close()
+	defer body.Close()
+	return json.NewDecoder(body).Decode(response)
 }
 
-func (c *Client) put(path string, q url.Values, body []byte) (io.ReadCloser, error) {
+func (c *Client) put(path string, q url.Values, body io.Reader) (io.ReadCloser, error) {
 	req, err := c.newRequest(http.MethodPut, path, q, body)
 	if err != nil {
 		return nil, err
@@ -138,28 +130,32 @@ func (c *Client) put(path string, q url.Values, body []byte) (io.ReadCloser, err
 	return doRequest(req)
 }
 
-func (c *Client) putJSON(path string, q url.Values, obj interface{}) (io.ReadCloser, error) {
-	bodyBytes, err := json.Marshal(&obj)
-	if err != nil {
-		return nil, err
-	}
-	return c.put(path, q, bodyBytes)
+func (c *Client) putJSON(path string, q url.Values, request interface{}) (io.ReadCloser, error) {
+	r := newJSONEncodeReader(request)
+	defer r.Close()
+	return c.put(path, q, r)
 }
 
-func (c *Client) putJSONUnmarshal(path string, q url.Values, obj interface{}, response interface{}) error {
-	ioBody, err := c.putJSON(path, q, obj)
+func (c *Client) putJSONUnmarshal(path string, q url.Values, request, response interface{}) error {
+	ioBody, err := c.putJSON(path, q, request)
 	if err != nil {
 		return err
 	}
-	err = json.NewDecoder(ioBody).Decode(response)
-	if err != nil {
-		return err
-	}
-	return ioBody.Close()
+	defer ioBody.Close()
+	return json.NewDecoder(ioBody).Decode(response)
 }
 
-func (c *Client) newRequest(method, path string, q url.Values, body []byte) (*http.Request, error) {
+func (c *Client) newRequest(method, path string, q url.Values, body io.Reader) (*http.Request, error) {
 	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
+}
+
+func newJSONEncodeReader(obj interface{}) io.ReadCloser {
+	r, w := io.Pipe()
+	enc := json.NewEncoder(w)
+	go func(obj interface{}, enc *json.Encoder, w *io.PipeWriter) {
+		enc.Encode(obj)
+	}(obj, enc, w)
+	return r
 }
 
 // SetCachedVersion will override the version that the wharf-api-client-go

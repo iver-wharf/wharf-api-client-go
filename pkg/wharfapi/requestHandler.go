@@ -1,7 +1,6 @@
 package wharfapi
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,7 +15,7 @@ var redacted = "*REDACTED*"
 var tokenPatternJSON = regexp.MustCompile(`("token"\s*:\s*"([a-zA-Z\d\s]+)")\s*`)
 var tokenReplacementJSON = fmt.Sprintf(`"token":"%s"`, redacted)
 
-func newRequest(method, authHeader, baseURL, path string, q url.Values, body []byte) (*http.Request, error) {
+func newRequest(method, authHeader, baseURL, path string, q url.Values, body io.Reader) (*http.Request, error) {
 	u, err := newURL(baseURL, path, q)
 	if err != nil {
 		return nil, err
@@ -34,9 +33,9 @@ func newURL(baseURL, path string, q url.Values) (*url.URL, error) {
 	return u, nil
 }
 
-func newRequestFromURL(method, authHeader string, u *url.URL, body []byte) (*http.Request, error) {
+func newRequestFromURL(method, authHeader string, u *url.URL, body io.Reader) (*http.Request, error) {
 	urlStr := u.String()
-	req, err := http.NewRequest(method, urlStr, bytes.NewReader(body))
+	req, err := http.NewRequest(method, urlStr, body)
 	if err != nil {
 		log.Error().WithError(err).Message("Failed preparing HTTP request.")
 		return nil, err
