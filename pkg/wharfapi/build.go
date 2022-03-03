@@ -23,9 +23,9 @@ type BuildSearch struct {
 	FinishedAfter   *time.Time `url:"finishedAfter,omitempty"`
 	FinishedBefore  *time.Time `url:"finishedBefore,omitempty"`
 
-	IsInvalid *bool   `url:"isInvalid,omitempty"`
-	Status    *string `url:"status,omitempty"`
-	StatusID  *int    `url:"statusId,omitempty"`
+	IsInvalid *bool    `url:"isInvalid,omitempty"`
+	Status    []string `url:"status,omitempty"`
+	StatusID  []int    `url:"statusId,omitempty"`
 
 	Environment *string `url:"environment,omitempty"`
 	GitBranch   *string `url:"gitBranch,omitempty"`
