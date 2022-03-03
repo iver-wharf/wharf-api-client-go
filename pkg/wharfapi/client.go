@@ -248,21 +248,22 @@ func (c *Client) validateServerVersion(apiVersion, endpointVersion semver.Versio
 }
 
 func (c *Client) validateClientVersion(apiVersion semver.Version) (logger.Level, error) {
-	if HighestSupportedVersion.Major+1 < apiVersion.Major {
+	switch {
+	case HighestSupportedVersion.Major+1 < apiVersion.Major:
 		return logger.LevelError, fmt.Errorf(
 			"%w: %s (server) is too new for %s (highest supported version by client)",
 			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
-	}
-	if HighestSupportedVersion.Major < apiVersion.Major {
+	case HighestSupportedVersion.Major < apiVersion.Major:
 		return logger.LevelWarn, fmt.Errorf(
 			"%w: %s (server) is newer than %s (highest supported version by"+
 				" client), enough to still be supported, but use with caution",
 			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
-	} else if HighestSupportedVersion.LT(apiVersion) {
+	case HighestSupportedVersion.LT(apiVersion):
 		return logger.LevelDebug, fmt.Errorf(
 			"%w: %s (server) is slightly newer than %s (highest supported "+
 				"version by client), however way within the supported range",
 			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
+	default:
+		return 0, nil
 	}
-	return 0, nil
 }
