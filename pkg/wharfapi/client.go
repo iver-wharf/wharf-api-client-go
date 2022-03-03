@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/blang/semver/v4"
+	"github.com/iver-wharf/wharf-core/pkg/logger"
 )
 
 // AuthError is returned on authentication/authorization errors issued when
@@ -58,9 +59,15 @@ type Client struct {
 	// each endpoint before even making the web request.
 	ErrIfOutdatedServer bool
 
-	hasCheckedVersion       bool
-	hasLoggedVersionWarning bool
-	cachedVersion           *semver.Version
+	// DisableOutdatedLogging will disable the logging to console if there are
+	// unattended issues regarding version mismatch between the client and the
+	// server.
+	DisableOutdatedLogging bool
+
+	hasCheckedVersion             bool
+	hasLoggedClientVersionWarning bool
+	hasLoggedServerVersionWarning bool
+	cachedVersion                 *semver.Version
 }
 
 // HighestSupportedVersion is the highest version that the wharf-api-client-go
@@ -164,7 +171,7 @@ func (c *Client) SetCachedVersion(major, minor, patch uint64) {
 		Patch: patch,
 	}
 	c.hasCheckedVersion = true
-	c.hasLoggedVersionWarning = false
+	c.hasLoggedClientVersionWarning = false
 }
 
 // ResetCachedVersion will reset the version that the wharf-api client thinks
@@ -172,7 +179,7 @@ func (c *Client) SetCachedVersion(major, minor, patch uint64) {
 func (c *Client) ResetCachedVersion() {
 	c.cachedVersion = nil
 	c.hasCheckedVersion = false
-	c.hasLoggedVersionWarning = false
+	c.hasLoggedClientVersionWarning = false
 }
 
 func (c *Client) getCachedOrFetchedVersion() *semver.Version {
@@ -190,7 +197,7 @@ func (c *Client) getCachedOrFetchedVersion() *semver.Version {
 }
 
 func (c *Client) validateEndpointVersion(major, minor, patch uint64) error {
-	if !c.ErrIfOutdatedClient && !c.ErrIfOutdatedServer {
+	if !c.ErrIfOutdatedClient && !c.ErrIfOutdatedServer && c.DisableOutdatedLogging {
 		// micro-optimization:
 		// skip fetching version if we don't even care about versions
 		return nil
@@ -208,30 +215,54 @@ func (c *Client) validateEndpointVersionNoLookup(major, minor, patch uint64, api
 		Minor: minor,
 		Patch: patch,
 	}
-	if c.ErrIfOutdatedServer && apiVersion.LT(endpointVersion) {
-		return fmt.Errorf("%w: %s (server) is less than %s (when endpoint was introduced)",
-			ErrOutdatedServer, apiVersion, endpointVersion)
-	}
-	if c.ErrIfOutdatedClient {
-		if HighestSupportedVersion.Major+1 < apiVersion.Major {
-			return fmt.Errorf("%w: %s (server) is too new for %s (highest supported version by client)",
-				ErrOutdatedClient, apiVersion, HighestSupportedVersion)
+	if err := c.validateServerVersion(*apiVersion, endpointVersion); err != nil {
+		if !c.DisableOutdatedLogging && !c.hasLoggedServerVersionWarning {
+			c.hasLoggedServerVersionWarning = true
+			log.Warn().WithError(err).
+				Message("Server is outdated.")
 		}
-		if !c.hasLoggedVersionWarning {
-			if HighestSupportedVersion.Major < apiVersion.Major {
-				log.Warn().
-					WithStringer("highestSupported", HighestSupportedVersion).
-					WithStringer("server", apiVersion).
-					Message("The client is outdated. Enough to still be supported, but use with caution.")
-				c.hasLoggedVersionWarning = true
-			} else if HighestSupportedVersion.LT(*apiVersion) {
-				log.Debug().
-					WithStringer("highestSupported", HighestSupportedVersion).
-					WithStringer("server", apiVersion).
-					Message("The client is slightly outdated. However way within the supported range.")
-				c.hasLoggedVersionWarning = true
-			}
+		if c.ErrIfOutdatedServer {
+			return err
+		}
+	}
+	if level, err := c.validateClientVersion(*apiVersion); err != nil {
+		if !c.DisableOutdatedLogging && !c.hasLoggedClientVersionWarning {
+			c.hasLoggedClientVersionWarning = true
+			logger.NewEventFromLogger(log, level).
+				WithError(err).
+				Message("Client is outdated.")
+		}
+		if c.ErrIfOutdatedClient && level >= logger.LevelError {
+			return err
 		}
 	}
 	return nil
+}
+
+func (c *Client) validateServerVersion(apiVersion, endpointVersion semver.Version) error {
+	if apiVersion.LT(endpointVersion) {
+		return fmt.Errorf("%w: %s (server) is less than %s (when endpoint was introduced)",
+			ErrOutdatedServer, apiVersion, endpointVersion)
+	}
+	return nil
+}
+
+func (c *Client) validateClientVersion(apiVersion semver.Version) (logger.Level, error) {
+	if HighestSupportedVersion.Major+1 < apiVersion.Major {
+		return logger.LevelError, fmt.Errorf(
+			"%w: %s (server) is too new for %s (highest supported version by client)",
+			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
+	}
+	if HighestSupportedVersion.Major < apiVersion.Major {
+		return logger.LevelWarn, fmt.Errorf(
+			"%w: %s (server) is newer than %s (highest supported version by"+
+				" client), enough to still be supported, but use with caution",
+			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
+	} else if HighestSupportedVersion.LT(apiVersion) {
+		return logger.LevelDebug, fmt.Errorf(
+			"%w: %s (server) is slightly newer than %s (highest supported "+
+				"version by client), however way within the supported range",
+			ErrOutdatedClient, apiVersion, HighestSupportedVersion)
+	}
+	return 0, nil
 }
