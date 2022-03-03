@@ -26,6 +26,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Changed minimum version of Go from 1.16 to 1.17. (#36)
 
+- Changed `BuildSearch.Status` to a slice to support searching for builds of any
+  matching status. Support was added to wharf-api in v5.1.0 with [wharf-api#150](https://github.com/iver-wharf/wharf-api/pull/150).
+  (#37)
+
 ## v2.0.0 (2022-01-25)
 
 - BREAKING: Changed module path from `github.com/iver-wharf/wharf-api-client-go`
