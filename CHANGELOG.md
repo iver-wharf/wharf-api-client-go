@@ -30,6 +30,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   matching status. Support was added to wharf-api in v5.1.0 with [wharf-api#150](https://github.com/iver-wharf/wharf-api/pull/150).
   (#37)
 
+- Added `WorkerID` to `response.Build` model, as added in
+  [wharf-api#156](https://github.com/iver-wharf/wharf-api/pull/156). (#38)
+
 - Added methods for API health and metadata: (#39)
 
   - `Client.GetHealth() HealthStatus`: `GET /api/health`
