@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package wharf.api.v5;
+
+import "google/protobuf/timestamp.proto";
+import "patch/go.proto";
+
+option (go.lint).all = true;
+option (go.lint).initialisms = "ID";
+
+option go_package =
+  "github.com/iver-wharf/wharf-api-client-go/v5/api/wharfapi/v5";
+
+// Builds contains Wharf build-oriented RPCs.
+service Builds {
+  // CreateLogStream allows creating logs as a client-side stream.
+  // Logs targeting non-existing builds as well as logs that has already been
+  // added before (based on the build, log, and step IDs) will be discarded.
+  rpc CreateLogStream(stream CreateLogStreamRequest)
+    returns (CreateLogStreamResponse);
+}
+
+// CreateLogStreamRequest contains the streamed log lines that meant to be
+// created.
+message CreateLogStreamRequest {
+  // BuildID is the database ID of the build this log line belongs to.
+  uint64 build_id = 1;
+  // WorkerLogID is the worker's own ID of the log line. It's unique per build step
+  // for a given build, but may have collisons across multiple steps or builds.
+  // Not database value, but instead worker's own ID of the log line.
+  uint64 worker_log_id = 2;
+  // WorkerStepID is the worker's own ID of the step. It's unique for a given build,
+  // but may have collisions across multiple builds.
+  // Not database value, but instead worker's own ID of the step ID.
+  uint64 worker_step_id = 3;
+  // Timestamp is when the log line was outputted from the build step.
+  google.protobuf.Timestamp timestamp = 4;
+  // Message is the log line text.
+  string message = 5;
+}
+
+// CreateLogStreamResponse is the response returned after closing a log creation
+// stream.
+message CreateLogStreamResponse {
+  // LinesInserted is the number of lines that has been inserted in total by
+  // this stream.
+  uint64 lines_inserted = 1;
+}
