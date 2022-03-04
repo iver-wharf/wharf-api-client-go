@@ -268,7 +268,7 @@ func newJSONEncodeReader(obj interface{}) io.ReadCloser {
 	r, w := io.Pipe()
 	enc := json.NewEncoder(w)
 	go func(obj interface{}, enc *json.Encoder, w *io.PipeWriter) {
-		enc.Encode(obj)
+		w.CloseWithError(enc.Encode(obj))
 	}(obj, enc, w)
 	return r
 }
