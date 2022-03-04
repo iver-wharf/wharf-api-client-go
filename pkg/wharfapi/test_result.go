@@ -93,7 +93,7 @@ func (c *Client) CreateBuildTestResult(buildID uint, fileName string, testResult
 	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
 		return nil, err
 	}
-	path := fmt.Sprintf("/api/build/%d/test-result", buildID)
+	path := fmt.Sprintf("/api/build/%d/test-result/", buildID)
 	body, err := c.uploadMultipart(http.MethodPost, path, map[string]file{
 		"files": {
 			fileName: fileName,
