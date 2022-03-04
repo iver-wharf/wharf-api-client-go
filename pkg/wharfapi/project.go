@@ -90,6 +90,25 @@ func (c *Client) UpdateProject(projectID uint, project request.ProjectUpdate) (r
 	return updatedProject, err
 }
 
+// DeleteProject deletes a project by ID by invoking the HTTP request:
+//  DELETE /api/project/{projectID}/override
+//
+// This will also delete all associated artifacts, builds, and logs. This is an
+// irreversable action.
+//
+// Added in wharf-api v0.2.8.
+func (c *Client) DeleteProject(projectID uint) error {
+	if err := c.validateEndpointVersion(0, 2, 8); err != nil {
+		return err
+	}
+	path := fmt.Sprintf("/api/project/%d", projectID)
+	resp, err := c.delete(path, nil, nil)
+	if err != nil {
+		return err
+	}
+	return resp.Close()
+}
+
 // GetProjectOverrides fetches a project's overrides by project ID by invoking the
 // HTTP request:
 //  GET /api/project/{projectID}/override
