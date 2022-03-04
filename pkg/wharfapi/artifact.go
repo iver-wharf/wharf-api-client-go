@@ -47,15 +47,12 @@ func (c *Client) GetBuildArtifactList(params ArtifactSearch, buildID uint) (resp
 //  GET /api/build/{buildId}/artifact/{artifactId}
 //
 // Added in wharf-api v0.7.1.
-func (c *Client) GetBuildArtifact(buildID, artifactID uint) (response.Artifact, error) {
-	// TODO: Receive multipart file, not response.Artifact
+func (c *Client) GetBuildArtifact(buildID, artifactID uint) (io.ReadCloser, error) {
 	if err := c.validateEndpointVersion(0, 7, 1); err != nil {
-		return response.Artifact{}, err
+		return nil, err
 	}
-	var artifact response.Artifact
 	path := fmt.Sprintf("/api/build/%d/artifact/%d", buildID, artifactID)
-	err := c.getUnmarshal(path, nil, &artifact)
-	return artifact, err
+	return c.get(path, nil)
 }
 
 // CreateBuildArtifact uploads an artifact by invoking the HTTP request:
