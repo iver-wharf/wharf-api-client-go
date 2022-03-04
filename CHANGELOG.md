@@ -20,6 +20,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added numerous dependencies:
 
   - `github.com/alta/protopatch` v0.5.0 (#35)
+  - `github.com/blang/semver/v4` v4.0.0. (#39)
   - `golang.org/x/oauth2` v0.0.0-20200107190931-bf48bf16ab8d (#35)
   - `google.golang.org/grpc` v1.44.0 (#35)
   - `google.golang.org/protobuf` v1.27.1 (#35)
@@ -39,6 +40,29 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   - `Client.GetVersion() app.Version`: `GET /api/version`
   - `Client.Ping() Ping`: `GET /api/ping`
 
+- Added methods for project overrides: (#40)
+
+  - `Client.GetProjectOverrides(uint) ProjectOverrides`:
+    `GET /api/project/{projectId}/override`
+
+  - `Client.UpdateProjectOverrides(uint, ProjectOverridesUpdate) ProjectOverrides`:
+    `PUT /api/project/{projectId}/override`
+
+  - `Client.DeleteProjectOverrides(uint)`:
+    `DELETE /api/project/{projectId}/override`
+
+- Added method to delete a project (USE WITH CAUTION!): (#40)
+
+  - `Client.DeleteProject(uint)`: `DELETE /api/project/{projectId}`
+
+- Added methods for uploading artifacts and test results: (#40)
+
+  - `Client.CreateBuildArtifact(uint, string, io.Reader)`:
+    `POST /api/build/{buildId}/artifact`
+
+  - `Client.CreateBuildTestResult(uint, string, io.Reader) []ArtifactMetadata`:
+    `POST /api/build/{buildId}/artifact`
+
 - Added client and server version validation on all endpoints. This is disabled
   by default, but can be enabled with the following new flags: (#39)
 
@@ -52,7 +76,14 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed `Client` method receiver to a pointer on all methods. This will not
   break regular usage, but may break edge case usages during compilation. (#39)
 
-- Added dependency `github.com/blang/semver/v4` v4.0.0. (#39)
+- Changed all endpoints that sends JSON payload in the request to stream the
+  writing instead of buffering it. This will lower the memory footprint for
+  larger payloads. (#40)
+
+- Fixed `GetBuildArtifact` having invalid implementation where it expected an
+  artifact JSON response, while in reality that's the endpoint to download an
+  artifact. This will break compilation of existing code, but the endpoint
+  never worked before to begin with. (#40)
 
 ## v2.0.0 (2022-01-25)
 
