@@ -89,3 +89,50 @@ func (c *Client) UpdateProject(projectID uint, project request.ProjectUpdate) (r
 	err := c.putJSONUnmarshal(path, nil, project, &updatedProject)
 	return updatedProject, err
 }
+
+// GetProjectOverrides fetches a project's overrides by project ID by invoking the
+// HTTP request:
+//  GET /api/project/{projectID}/override
+//
+// Added in wharf-api v5.0.0.
+func (c *Client) GetProjectOverrides(projectID uint) (response.ProjectOverrides, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return response.ProjectOverrides{}, err
+	}
+	path := fmt.Sprintf("/api/project/%v/override", projectID)
+	var overrides response.ProjectOverrides
+	err := c.getUnmarshal(path, nil, &overrides)
+	return overrides, err
+}
+
+// UpdateProjectOverrides updates a project's overrides by project ID by
+// invoking the HTTP request:
+//  PUT /api/project/{projectID}/override
+//
+// Added in wharf-api v5.0.0.
+func (c *Client) UpdateProjectOverrides(projectID uint, overrides request.ProjectOverridesUpdate) (response.ProjectOverrides, error) {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return response.ProjectOverrides{}, err
+	}
+	var updatedOverrides response.ProjectOverrides
+	path := fmt.Sprintf("/api/project/%d/override", projectID)
+	err := c.putJSONUnmarshal(path, nil, overrides, &updatedOverrides)
+	return updatedOverrides, err
+}
+
+// DeleteProjectOverrides clears a project's overrides by project ID by
+// invoking the HTTP request:
+//  DELETE /api/project/{projectID}/override
+//
+// Added in wharf-api v5.0.0.
+func (c *Client) DeleteProjectOverrides(projectID uint) error {
+	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
+		return err
+	}
+	path := fmt.Sprintf("/api/project/%d/override", projectID)
+	resp, err := c.delete(path, nil, nil)
+	if err != nil {
+		return err
+	}
+	return resp.Close()
+}

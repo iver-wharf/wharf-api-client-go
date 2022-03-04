@@ -150,6 +150,14 @@ func (c *Client) newRequest(method, path string, q url.Values, body io.Reader) (
 	return newRequest(method, c.AuthHeader, c.APIURL, path, q, body)
 }
 
+func (c *Client) delete(path string, q url.Values, body io.Reader) (io.ReadCloser, error) {
+	req, err := c.newRequest(http.MethodDelete, path, q, body)
+	if err != nil {
+		return nil, err
+	}
+	return doRequest(req)
+}
+
 // SetCachedVersion will override the version that the wharf-api-client-go
 // thinks the remote API has when validating the Client.ErrIfOutdatedServer.
 func (c *Client) SetCachedVersion(major, minor, patch uint64) {
