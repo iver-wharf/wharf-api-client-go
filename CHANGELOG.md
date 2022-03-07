@@ -61,7 +61,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
     `POST /api/build/{buildId}/artifact`
 
   - `Client.CreateBuildTestResult(uint, string, io.Reader) []ArtifactMetadata`:
-    `POST /api/build/{buildId}/artifact`
+    `POST /api/build/{buildId}/test-result`
 
 - Added client and server version validation on all endpoints. This is disabled
   by default, but can be enabled with the following new flags: (#39)

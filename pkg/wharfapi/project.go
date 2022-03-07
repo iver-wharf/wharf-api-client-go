@@ -118,7 +118,7 @@ func (c *Client) GetProjectOverrides(projectID uint) (response.ProjectOverrides,
 	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
 		return response.ProjectOverrides{}, err
 	}
-	path := fmt.Sprintf("/api/project/%v/override", projectID)
+	path := fmt.Sprintf("/api/project/%d/override", projectID)
 	var overrides response.ProjectOverrides
 	err := c.getUnmarshal(path, nil, &overrides)
 	return overrides, err
