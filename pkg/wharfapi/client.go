@@ -96,8 +96,7 @@ func (c *Client) getUnmarshal(path string, q url.Values, response interface{}) e
 	if err != nil {
 		return err
 	}
-	defer ioBody.Close()
-	return json.NewDecoder(ioBody).Decode(response)
+	return decodeJSONAndClose(ioBody, response)
 }
 
 func (c *Client) post(path string, q url.Values, body io.Reader) (io.ReadCloser, error) {
@@ -108,10 +107,11 @@ func (c *Client) post(path string, q url.Values, body io.Reader) (io.ReadCloser,
 	return doRequest(req)
 }
 
-func (c *Client) postJSON(path string, q url.Values, request interface{}) (io.ReadCloser, error) {
+func (c *Client) postJSON(path string, q url.Values, request interface{}) (resp io.ReadCloser, finalErr error) {
 	r := newJSONEncodeReader(request)
-	defer r.Close()
-	return c.post(path, q, r)
+	defer closeAndSetError(r, &finalErr)
+	resp, finalErr = c.post(path, q, r)
+	return
 }
 
 func (c *Client) postJSONUnmarshal(path string, q url.Values, request, response interface{}) error {
@@ -119,8 +119,7 @@ func (c *Client) postJSONUnmarshal(path string, q url.Values, request, response 
 	if err != nil {
 		return err
 	}
-	defer body.Close()
-	return json.NewDecoder(body).Decode(response)
+	return decodeJSONAndClose(body, response)
 }
 
 func (c *Client) put(path string, q url.Values, body io.Reader) (io.ReadCloser, error) {
@@ -131,10 +130,11 @@ func (c *Client) put(path string, q url.Values, body io.Reader) (io.ReadCloser, 
 	return doRequest(req)
 }
 
-func (c *Client) putJSON(path string, q url.Values, request interface{}) (io.ReadCloser, error) {
+func (c *Client) putJSON(path string, q url.Values, request interface{}) (resp io.ReadCloser, finalErr error) {
 	r := newJSONEncodeReader(request)
-	defer r.Close()
-	return c.put(path, q, r)
+	defer closeAndSetError(r, &finalErr)
+	resp, finalErr = c.put(path, q, r)
+	return
 }
 
 func (c *Client) putJSONUnmarshal(path string, q url.Values, request, response interface{}) error {
@@ -142,8 +142,7 @@ func (c *Client) putJSONUnmarshal(path string, q url.Values, request, response i
 	if err != nil {
 		return err
 	}
-	defer ioBody.Close()
-	return json.NewDecoder(ioBody).Decode(response)
+	return decodeJSONAndClose(ioBody, response)
 }
 
 func (c *Client) newRequest(method, path string, q url.Values, body io.Reader) (*http.Request, error) {
@@ -156,6 +155,19 @@ func (c *Client) delete(path string, q url.Values, body io.Reader) (io.ReadClose
 		return nil, err
 	}
 	return doRequest(req)
+}
+
+func decodeJSONAndClose(r io.ReadCloser, obj interface{}) (finalErr error) {
+	defer closeAndSetError(r, &finalErr)
+	finalErr = json.NewDecoder(r).Decode(obj)
+	return
+}
+
+func closeAndSetError(closer io.Closer, errPtr *error) {
+	closeErr := closer.Close()
+	if errPtr != nil && *errPtr == nil {
+		*errPtr = closeErr
+	}
 }
 
 // SetCachedVersion will override the version that the wharf-api-client-go
@@ -278,19 +290,21 @@ type file struct {
 	reader   io.Reader
 }
 
-func (c Client) uploadMultipart(method, path string, files map[string]file) (io.ReadCloser, error) {
+func (c Client) uploadMultipart(method, path string, files map[string]file) (resp io.ReadCloser, finalErr error) {
 	pipeReader, pipeWriter := io.Pipe()
-	defer pipeReader.Close()
+	defer closeAndSetError(pipeReader, &finalErr)
 	mw := multipart.NewWriter(pipeWriter)
 
 	go writeMultipartFiles(mw, pipeWriter, files)
 
 	req, err := c.newRequest(method, path, nil, pipeReader)
 	if err != nil {
-		return nil, err
+		finalErr = err
+		return
 	}
 	req.Header.Set("Content-Type", mw.FormDataContentType())
-	return doRequest(req)
+	resp, finalErr = doRequest(req)
+	return
 }
 
 type closerWithError interface {
