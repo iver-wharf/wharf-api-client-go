@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.1.0 (WIP)
+## v2.1.0 (2021-03-08)
 
 - Added `Client.CreateBuildLogStream` that uses wharf-api's gRPC API that was
   introduced in wharf-api v5.1.0 to allow streaming log creation. (#35)
