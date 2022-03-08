@@ -1,7 +1,9 @@
 package wharfapi
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -34,5 +36,23 @@ func trimProtocol(v string) string {
 		return strings.TrimPrefix(v, "https://")
 	default:
 		return v
+	}
+}
+
+func decodeJSONAndClose(r io.ReadCloser, obj interface{}) (finalErr error) {
+	defer closeAndSetError(r, &finalErr)
+	finalErr = json.NewDecoder(r).Decode(obj)
+	return
+}
+
+// closeAndSetError may be used to set the named return variable inside a
+// deferred call if that deferred call failed.
+//
+// NOTE: The errPtr argument must be a pointer to a named result parameters,
+// otherwise it will not affect the calling function's returned value.
+func closeAndSetError(closer io.Closer, errPtr *error) {
+	closeErr := closer.Close()
+	if errPtr != nil && *errPtr == nil {
+		*errPtr = closeErr
 	}
 }

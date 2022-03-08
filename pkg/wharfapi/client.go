@@ -157,19 +157,6 @@ func (c *Client) delete(path string, q url.Values, body io.Reader) (io.ReadClose
 	return doRequest(req)
 }
 
-func decodeJSONAndClose(r io.ReadCloser, obj interface{}) (finalErr error) {
-	defer closeAndSetError(r, &finalErr)
-	finalErr = json.NewDecoder(r).Decode(obj)
-	return
-}
-
-func closeAndSetError(closer io.Closer, errPtr *error) {
-	closeErr := closer.Close()
-	if errPtr != nil && *errPtr == nil {
-		*errPtr = closeErr
-	}
-}
-
 // SetCachedVersion will override the version that the wharf-api-client-go
 // thinks the remote API has when validating the Client.ErrIfOutdatedServer.
 func (c *Client) SetCachedVersion(major, minor, patch uint64) {

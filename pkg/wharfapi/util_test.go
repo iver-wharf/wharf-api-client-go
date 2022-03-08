@@ -1,6 +1,8 @@
 package wharfapi
 
 import (
+	"errors"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -120,3 +122,78 @@ func TestCutString_notOk(t *testing.T) {
 		})
 	}
 }
+
+func TestCloseAndSetError(t *testing.T) {
+	closeErr := errors.New("close error")
+	returnErr := errors.New("return error")
+	var tests = []struct {
+		name      string
+		closeErr  error
+		returnErr error
+		wantErr   error
+	}{
+		{
+			name:      "no errors",
+			closeErr:  nil,
+			returnErr: nil,
+			wantErr:   nil,
+		},
+		{
+			name:      "only close err",
+			closeErr:  closeErr,
+			returnErr: nil,
+			wantErr:   closeErr,
+		},
+		{
+			name:      "only return err",
+			closeErr:  nil,
+			returnErr: returnErr,
+			wantErr:   returnErr,
+		},
+		{
+			name:      "return err takes precedence",
+			closeErr:  closeErr,
+			returnErr: returnErr,
+			wantErr:   returnErr,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := closeAndSetErrorWithNamedResultParams(testErrorCloser{tc.closeErr}, tc.returnErr)
+			assert.Equal(t, tc.wantErr, got)
+		})
+	}
+}
+
+func closeAndSetErrorWithNamedResultParams(closer io.Closer, err error) (finalErr error) {
+	defer closeAndSetError(closer, &finalErr)
+	finalErr = err
+	return
+}
+
+func TestCloseAndSetError_explicitVar(t *testing.T) {
+	// This test is merely here for documentation of a technical detail of the
+	// Go language. This test shows:
+	//
+	//   - Defer runs after the return value has been allocated
+	//   - The return value cannot be changed by changing the variable
+	//   - Go acts as if we had a named return variable, that we cannot access
+	closeErr := errors.New("close error")
+	got := closeAndSetErrorWithExplicitVar(testErrorCloser{closeErr}, nil)
+	// In the TestCloseAndSetError_explicitVar/only_close_err test above,
+	// that uses closeAndSetErrorWithNamedResultParams instead, it returned the
+	// closeErr instead of nil.
+	assert.Equal(t, nil, got)
+}
+
+func closeAndSetErrorWithExplicitVar(closer io.Closer, err error) error {
+	var finalErr error
+	defer closeAndSetError(closer, &finalErr)
+	finalErr = err
+	return finalErr
+}
+
+type testErrorCloser struct{ err error }
+
+func (c testErrorCloser) Close() error { return c.err }
