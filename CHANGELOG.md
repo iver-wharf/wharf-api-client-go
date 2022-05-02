@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.2.0 (WIP)
+## v2.2.0 (2022-05-02)
 
 - Added methods for execution engine: (#45)
 
