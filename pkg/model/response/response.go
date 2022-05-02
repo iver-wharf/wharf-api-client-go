@@ -1,7 +1,7 @@
 // Package response contains plain old Go types returned by wharf-web in the
 // HTTP responses, with Swaggo-specific Go tags.
 //
-// Copied from https://github.com/iver-wharf/wharf-api/blob/v5.0.0/pkg/model/response/response.go
+// Copied from https://github.com/iver-wharf/wharf-api/blob/v5.1.2/pkg/model/response/response.go
 package response
 
 import (
@@ -101,11 +101,12 @@ type Build struct {
 	GitBranch             string                `json:"gitBranch"`
 	Environment           null.String           `json:"environment" swaggertype:"string" extensions:"x-nullable"`
 	Stage                 string                `json:"stage"`
-	WorkerID              string                `json:"workerId"`
+	WorkerID              string                `json:"workerId" example:"5d6bcf20-81fd-4ad8-a446-735aa8423dfe"`
 	Params                []BuildParam          `json:"params"`
 	IsInvalid             bool                  `json:"isInvalid"`
 	TestResultSummaries   []TestResultSummary   `json:"testResultSummaries"`
 	TestResultListSummary TestResultListSummary `json:"testResultListSummary"`
+	Engine                *Engine               `json:"engine" extensions:"x-nullable"`
 }
 
 // BuildParam holds the name and value of an input parameter fed into a build.
@@ -138,6 +139,23 @@ const (
 	// in some build step.
 	BuildFailed BuildStatus = "Failed"
 )
+
+// Engine is an execution engine wharf-api uses to perform its builds.
+// Engines are configured in wharf-api's configuration, and cannot be changed
+// on a running instance of wharf-api.
+type Engine struct {
+	ID   string `json:"id" example:"primary"`
+	Name string `json:"name" example:"Primary"`
+	URL  string `json:"url" example:"http://wharf-cmd-provisioner/trigger"`
+}
+
+// EngineList contains a list of execution engines that the wharf-api is
+// configured with, as well as a declaration of which one is the default engine
+// that will be used on new builds if no engine is specified.
+type EngineList struct {
+	DefaultEngine *Engine  `json:"defaultEngine" extensions:"x-nullable"`
+	List          []Engine `json:"list"`
+}
 
 // HealthStatus holds a human-readable string stating the health of the API and
 // its integrations, as well as a boolean for easy machine-readability.

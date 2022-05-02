@@ -12,6 +12,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.2.0 (WIP)
+
+- Added methods for execution engine: (#45)
+
+  - `Client.GetEngineList() EngineList`: `GET /api/engine`
+
+- Added query parameter for specifying engine in new builds: (#45)
+
+  - `ProjectStartBuild.Engine`: `POST /api/project/{projectId}/build?engine=...`
+
 ## v2.1.0 (2021-03-08)
 
 - Added `Client.CreateBuildLogStream` that uses wharf-api's gRPC API that was

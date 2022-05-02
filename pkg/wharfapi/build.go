@@ -43,6 +43,7 @@ type ProjectStartBuild struct {
 	Stage       string `url:"stage"`
 	Branch      string `url:"branch,omitempty"`
 	Environment string `url:"environment,omitempty"`
+	Engine      string `url:"engine,omitempty"`
 }
 
 // GetBuildList filters builds based on the parameters by invoking the HTTP
