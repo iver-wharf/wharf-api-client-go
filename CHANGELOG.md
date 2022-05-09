@@ -12,6 +12,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v2.2.1 (WIP)
+
+- Fixed gRPC streaming failing if no port number was specified in the `APIURL`
+  field of `wharfapi.Client`. (#?)
+
 ## v2.2.0 (2022-05-02)
 
 - Added methods for execution engine: (#45)

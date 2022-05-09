@@ -56,3 +56,7 @@ func closeAndSetError(closer io.Closer, errPtr *error) {
 		*errPtr = closeErr
 	}
 }
+
+func isHTTPS(s string) bool {
+	return strings.HasPrefix(s, "https://")
+}
