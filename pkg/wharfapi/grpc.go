@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"regexp"
 	"strings"
 
 	v5 "github.com/iver-wharf/wharf-api-client-go/v2/api/wharfapi/v5"
@@ -18,6 +19,8 @@ import (
 	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+var hasPortSuffixRegexp = regexp.MustCompile(":\\d+$")
 
 // CreateBuildLogStream contains methods for sending log creation requests in
 // a streamed fashion.
@@ -90,11 +93,21 @@ func (c *Client) grpcDial() (*grpc.ClientConn, error) {
 		})
 		opts = append(opts, grpc.WithPerRPCCredentials(perRPC))
 	}
-	return grpc.Dial(trimProtocol(c.APIURL), opts...)
+
+	trimmed := strings.TrimRight(trimProtocol(c.APIURL), "/")
+	if !hasPortSuffixRegexp.MatchString(trimmed) {
+		if isHTTPS(c.APIURL) {
+			trimmed = fmt.Sprintf("%s:443", trimmed)
+		} else {
+			trimmed = fmt.Sprintf("%s:80", trimmed)
+		}
+	}
+
+	return grpc.Dial(trimmed, opts...)
 }
 
 func (c *Client) grpcTransportCred() (credentials.TransportCredentials, error) {
-	if !strings.HasPrefix(c.APIURL, "https://") {
+	if !isHTTPS(c.APIURL) {
 		return insecure.NewCredentials(), nil
 	}
 	certPool, err := x509.SystemCertPool()
