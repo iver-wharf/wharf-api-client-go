@@ -32,10 +32,21 @@ func (c *Client) UpdateProjectBranchList(projectID uint, branches []request.Bran
 	if err := c.validateEndpointVersion(5, 0, 0); err != nil {
 		return nil, err
 	}
-	var newBranches []response.Branch
+	body := request.BranchListUpdate{
+		Branches: make([]request.BranchUpdate, 0, len(branches)),
+	}
+	for _, b := range branches {
+		body.Branches = append(body.Branches, request.BranchUpdate{
+			Name: b.Name,
+		})
+		if b.Default {
+			body.DefaultBranch = b.Name
+		}
+	}
+	var response response.BranchList
 	path := fmt.Sprintf("/api/project/%d/branch", projectID)
-	err := c.putJSONUnmarshal(path, nil, branches, &newBranches)
-	return newBranches, err
+	err := c.putJSONUnmarshal(path, nil, body, &response)
+	return response.Branches, err
 }
 
 // GetProjectBranchList gets the branches for a project by invoking the HTTP
