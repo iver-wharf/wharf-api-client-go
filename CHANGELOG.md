@@ -18,6 +18,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   field of `wharfapi.Client`. Now defaults to `80` for `HTTP` URLs, and `443`
   for `HTTPS`. (#48)
 
+- Fixed `UpdateProjectBranchList` using the wrong HTTP request & response
+  bodies. (#49)
+
 ## v2.2.0 (2022-05-02)
 
 - Added methods for execution engine: (#45)
